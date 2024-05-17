@@ -1,0 +1,6 @@
+@Electio.Api_HostAddress = http://localhost:5207
+
+GET {{Electio.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
