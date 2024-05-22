@@ -1,6 +1,6 @@
-﻿using System.Security.Cryptography.X509Certificates;
-using AutoMapper;
+﻿using AutoMapper;
 using Electio.BusinessLogic.DTOs;
+using Electio.DataAccess;
 using Electio.DataAccess.Entities;
 using Electio.DataAccess.Repositories;
 
@@ -9,49 +9,48 @@ public class StudentService
 {
     private readonly IMapper _mapper;
     //private readonly IUnitOfWork _unitOfWork;
-    private readonly StudentRepository _studentRepository;
-    private readonly StudentOnCourseRepository _studentOnCourseRepository;
-
-    // TODO: add courses service and relete repo from here
-    private readonly CourseRepository _courseRepository;
+    private readonly UnitOfWork _unitOfWork;
 
     public StudentService(
         IMapper mapper,
-        StudentRepository studentRepository,
-        StudentOnCourseRepository studentOnCourseRepository,
-        CourseRepository courseRepository)
+        UnitOfWork unitOfWork)
     {
         _mapper = mapper;
-        _studentRepository = studentRepository;
-        _studentOnCourseRepository = studentOnCourseRepository;
-        _courseRepository = courseRepository;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<StudentGetDTO> Create(StudentCreateDTO dto)
     {
         // TODO: add mapping
-        Student student = new() { Name = dto.Name, AverageGrade = dto.AverageGrade };
+        Student student = _mapper.Map<Student>(dto);
+        student.Id = Guid.NewGuid();
 
-        student = await _studentRepository.CreateStudentAsync(student);
+        student = await _unitOfWork.StudentRepository.CreateStudentAsync(student);
+
+        //// await _unitOfWork.SaveChangesAsync();
+        //// TODO: do something to get Id properly
+        //// student = _unitOfWork.StudentRepository.GetAllAsync().Result.Last();
 
         foreach (var coursePriority in dto.CoursesPriorities!)
         {
-            await _studentOnCourseRepository.AddCoursePriorityToStudent((int)student.Id!, coursePriority.Key, coursePriority.Value);
+            await _unitOfWork.StudentOnCourseRepository.AddCoursePriorityToStudent(student.Id, coursePriority.Key, coursePriority.Value);
         };
+
+        await _unitOfWork.SaveChangesAsync();
 
         return _mapper.Map<StudentGetDTO>(student);
     }
 
     public async Task<IEnumerable<StudentGetDTO>> GetAllAsync()
     {
-        var students = await _studentRepository.GetAllStudentsAsync();
+        var students = await _unitOfWork.StudentRepository.GetAllAsync();
 
         return _mapper.Map<IEnumerable<StudentGetDTO>>(students);
     }
 
-    public async Task<StudentGetDTO> GetByIdAsync(int id)
+    public async Task<StudentGetDTO> GetByIdAsync(Guid id)
     {
-        var student = await _studentRepository.GetStudentByIdAsync(id);
+        var student = await _unitOfWork.StudentRepository.GetByIdAsync(id);
 
         return _mapper.Map<StudentGetDTO>(student);
     }
@@ -63,58 +62,71 @@ public class StudentService
         // NOTE: consider ordering from lowest to highest to remove at last pos
         //public List<Course> GradeBasedPlacement(List<Student> students)
 
-        // TODO: add titles and quotas here
-        await _courseRepository.CreateCourseAsync(new Course { Title = "dotnet", Quota = 3 });
-        await _courseRepository.CreateCourseAsync(new Course { Title = "node.js", Quota = 3 });
-        await _courseRepository.CreateCourseAsync(new Course { Title = "java", Quota = 3 });
-
+        var students = await _unitOfWork.StudentRepository.GetAllAsync();
         // TODO: get rid of this variable
-        var unassignedStudents = new List<Student>(await _studentRepository.GetAllStudentsAsync());
+        var unassignedStudents = new List<Student>(students);
 
         while (unassignedStudents.Any())
         {
             var currentStudent = unassignedStudents.Last();
 
-            var highestPriorityNotCheckedCourseId = _studentOnCourseRepository.GetCoursesWithPrioritiesByStudentIdAsync((int)currentStudent.Id!).Result
+            var highestPriorityNotCheckedCourseId = (await _unitOfWork.StudentOnCourseRepository.GetCoursesWithPrioritiesByStudentIdAsync(currentStudent.Id))
                 .Where(soc => soc.IsChecked == false)
-                .OrderBy(soc => soc.Priority).First().Id;
+                .OrderBy(soc => soc.Priority).First().CourseId;
 
             //var course = placement.First(course => course.Title == highestPriorityCourseId);
+            var countOfStudentsEnrolledOnCourse = (await _unitOfWork.StudentOnCourseRepository.GetStudentsByCourseIdAsync(highestPriorityNotCheckedCourseId)).Count();
+            var courseQuota = (await _unitOfWork.CourseRepository.GetCourseByIdAsync(highestPriorityNotCheckedCourseId)).Quota;
 
-            if (_studentOnCourseRepository.GetStudentsIdsByCourseIdAsync((int)highestPriorityNotCheckedCourseId!).Result.Count()
-                < _courseRepository.GetCourseByIdAsync((int)highestPriorityNotCheckedCourseId!).Result.Quota)
+            if (countOfStudentsEnrolledOnCourse < courseQuota)
             {
-                await _studentOnCourseRepository.AddStudentToCourseAsync((int)currentStudent.Id!, (int)highestPriorityNotCheckedCourseId!);              
+                var tempStudOnCourse = await _unitOfWork.StudentOnCourseRepository.AddStudentToCourseAsync(currentStudent.Id, highestPriorityNotCheckedCourseId);
+                // TODO: remove savve here and mmake it in the end of the method
+                
+                
+                //-------------------------------- remove save
+                await _unitOfWork.SaveChangesAsync(); 
                 unassignedStudents.Remove(currentStudent);
                 continue;
             }
 
-            
-            var studentsOnCourseIds = _studentOnCourseRepository.GetStudentsIdsByCourseIdAsync((int)highestPriorityNotCheckedCourseId!).Result;
 
-            var studentWithLowestAverageGrade = _studentRepository.GetAllStudentsAsync().Result
-                .Where(s => studentsOnCourseIds.Contains((int)s.Id!))
+            var studentsOnCourseIds = (await _unitOfWork.StudentOnCourseRepository.GetStudentsByCourseIdAsync(highestPriorityNotCheckedCourseId))
+                .Select(s => s.Id).ToList();
+
+            var studentWithLowestAverageGrade = _unitOfWork.StudentRepository.GetAllAsync().Result
+                .Where(s => studentsOnCourseIds.Contains(s.Id!))
                 .MinBy(s => s.AverageGrade)!;
 
             if (studentWithLowestAverageGrade.AverageGrade > currentStudent.AverageGrade)
             {
-                await _studentOnCourseRepository.MarkCourseAsChecked((int)currentStudent.Id, (int)highestPriorityNotCheckedCourseId);
+                await _unitOfWork.StudentOnCourseRepository.MarkCourseAsChecked(currentStudent.Id, highestPriorityNotCheckedCourseId);
+                // TODO: remove savve here and mmake it in the end of the method
+                // await _unitOfWork.SaveChangesAsync();
             }
 
-            await _studentOnCourseRepository.MarkCourseAsChecked((int)studentWithLowestAverageGrade.Id, (int)highestPriorityNotCheckedCourseId);
+            await _unitOfWork.StudentOnCourseRepository.MarkCourseAsChecked(studentWithLowestAverageGrade.Id, highestPriorityNotCheckedCourseId);
+            // TODO: remove savve here and mmake it in the end of the method
+            //await _unitOfWork.SaveChangesAsync();
 
             // todo
-            
+
             unassignedStudents.Remove(currentStudent);
             unassignedStudents.Add(studentWithLowestAverageGrade);
 
-            await _studentOnCourseRepository.RemoveStudentFromCourseAsync((int)studentWithLowestAverageGrade.Id, (int)highestPriorityNotCheckedCourseId);
-            await _studentOnCourseRepository.AddStudentToCourseAsync((int)currentStudent.Id, (int)highestPriorityNotCheckedCourseId);
+            await _unitOfWork.StudentOnCourseRepository.RemoveStudentFromCourseAsync(studentWithLowestAverageGrade.Id, highestPriorityNotCheckedCourseId);
+            // TODO: remove savve here and mmake it in the end of the method
+            //await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.StudentOnCourseRepository.AddStudentToCourseAsync(currentStudent.Id, highestPriorityNotCheckedCourseId);
+            // TODO: remove savve here and mmake it in the end of the method
+            //await _unitOfWork.SaveChangesAsync();
         }
+
+        await _unitOfWork.SaveChangesAsync();
     }
 
-    public async Task<IEnumerable<Course>> GetStudentCourses(int studentId)
+    public async Task<IEnumerable<Course>> GetStudentCourses(Guid studentId)
     {
-        return await _studentOnCourseRepository.GetCoursesByStudentIdAsync(studentId);
+        return await _unitOfWork.StudentOnCourseRepository.GetCoursesByStudentIdAsync(studentId);
     }
 }

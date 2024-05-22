@@ -1,9 +1,9 @@
 ﻿namespace Electio.DataAccess.Entities;
 public class Student
 {
-    public int? Id { get; set; }
+    public Guid Id { get; set; }
 
-    public string? Name { get; set; }
+    public string Name { get; set; } = string.Empty;
 
-    public double? AverageGrade { get; set; }
+    public double AverageGrade { get; set; }
 }

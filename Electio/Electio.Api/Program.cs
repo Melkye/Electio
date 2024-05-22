@@ -11,14 +11,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 // Register ElectioDbContext to DI container
-builder.Services.AddDbContext<ElectioDbContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
+//builder.Services.AddDbContext<ElectioDbContext>((sp, options) =>
+//{
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+//});
 
-//builder.Services.AddDbContext<ElectioDbContext>(
-//    optionsBuilder => optionsBuilder.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")),
-//    contextLifetime: ServiceLifetime.Transient);
+builder.Services.AddDbContext<ElectioDbContext>(
+    optionsBuilder => optionsBuilder.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")),
+    contextLifetime: ServiceLifetime.Transient);
 ////contextLifetime: ServiceLifetime.Singleton);
 ////builder.Services.AddDbContext<ElectioDbContext>();
 
@@ -28,12 +28,16 @@ var mapperConfig = new MapperConfiguration(mc =>
 });
 builder.Services.AddSingleton<IMapper>(provider => new Mapper(mapperConfig));
 
-builder.Services.AddTransient<StudentService, StudentService>();
-builder.Services.AddTransient<StudentRepository, StudentRepository>();
+builder.Services.AddTransient<UnitOfWork>();
 
-builder.Services.AddTransient<CourseRepository, CourseRepository>();
+builder.Services.AddTransient<StudentRepository>();
+builder.Services.AddTransient<CourseRepository>();
+builder.Services.AddTransient<StudentOnCourseRepository>();
 
-builder.Services.AddTransient<StudentOnCourseRepository, StudentOnCourseRepository>();
+builder.Services.AddTransient<StudentService>();
+builder.Services.AddTransient<CoursesService>();
+
+//builder.Services.AddTransient<ElectioDbContext, ElectioDbContext>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

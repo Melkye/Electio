@@ -1,13 +1,13 @@
 ﻿namespace Electio.DataAccess.Entities;
 public class StudentOnCourse
 {
-    public int? Id { get; set; }
+    public Guid Id { get; set; }
 
-    public int? StudentId { get; set; }
+    public Guid StudentId { get; set; }
 
-    public int? CourseId { get; set; }
+    public Guid CourseId { get; set; }
 
-    public int? Priority { get; set; }
+    public int Priority { get; set; }
 
     public bool IsEnrolled { get; set; } = false;
 

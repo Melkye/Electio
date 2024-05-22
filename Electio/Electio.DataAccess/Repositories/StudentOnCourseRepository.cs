@@ -1,4 +1,5 @@
-﻿using Electio.DataAccess.Entities;
+﻿using System.Linq;
+using Electio.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Electio.DataAccess.Repositories;
@@ -11,7 +12,7 @@ public class StudentOnCourseRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<Course>> GetCoursesByStudentIdAsync(int studentId)
+    public async Task<IEnumerable<Course>> GetCoursesByStudentIdAsync(Guid studentId)
     {
         return await _context.Courses.Join(
             _context.StudentsOnCourses,
@@ -24,14 +25,14 @@ public class StudentOnCourseRepository
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<StudentOnCourse>> GetCoursesWithPrioritiesByStudentIdAsync(int studentId)
+    public async Task<IEnumerable<StudentOnCourse>> GetCoursesWithPrioritiesByStudentIdAsync(Guid studentId)
     {
         return await _context.StudentsOnCourses
             .Where(soc => soc.StudentId == studentId)
             .ToListAsync();
     }
 
-    public async Task AddCoursePriorityToStudent(int studentId, int courseId, int priority)
+    public async Task<StudentOnCourse> AddCoursePriorityToStudent(Guid studentId, Guid courseId, int priority)
     {
         // TODO: check if course and student exist
 
@@ -40,16 +41,16 @@ public class StudentOnCourseRepository
             StudentId = studentId,
             CourseId = courseId,
             Priority = priority,
-            IsEnrolled = false
         };
 
-        _context.StudentsOnCourses.Add(studentOnCourse);
+        var studentOnCourseEntity = await _context.StudentsOnCourses.AddAsync(studentOnCourse);
 
         // TODO: consider using SaveChangesAsync out of repositories
-        await _context.SaveChangesAsync();
+        //await _context.SaveChangesAsync();
+        return studentOnCourseEntity.Entity;
     }
 
-    public async Task AddCoursePriorityToStudent(int studentId, string courseTitle, int priority)
+    public async Task<StudentOnCourse> AddCoursePriorityToStudent(Guid studentId, string courseTitle, int priority)
     {
         // TODO: check if course and student exist
         var courseId = await _context.Courses
@@ -57,73 +58,88 @@ public class StudentOnCourseRepository
             .Select(c => c.Id)
             .FirstOrDefaultAsync();
 
-        AddCoursePriorityToStudent(studentId, (int)courseId, priority);
+        return await AddCoursePriorityToStudent(studentId, courseId, priority);
     }
 
     // TODO: consider returning Student but not id
-    public async Task<IEnumerable<int?>> GetStudentsIdsByCourseIdAsync(int courseId)
+    public async Task<IEnumerable<Student>> GetStudentsByCourseIdAsync(Guid courseId)
     {
-        return await _context.StudentsOnCourses
-            .Where(c => c.Id == courseId)
-            .Select(c => c.StudentId)
-            .ToListAsync();
+        var studentIds = await _context.StudentsOnCourses
+        .Where(soc => soc.CourseId == courseId && soc.IsEnrolled)
+        .Select(soc => soc.StudentId)
+        .ToListAsync();
+
+        return await _context.Students.Where(s => studentIds.Contains(s.Id)).ToListAsync();
     }
 
-    public async Task AddStudentToCourseAsync(int studentId, int courseId)
+    public async Task<StudentOnCourse> AddStudentToCourseAsync(Guid studentId, Guid courseId)
     {
         var student = await _context.Students.FindAsync(studentId);
         var course = await _context.Courses.FindAsync(courseId);
 
         if (student != null && course != null)
         {
-            _context.StudentsOnCourses.Update(
-                new StudentOnCourse
-            {
-                StudentId = studentId,
-                CourseId = courseId,
-                IsEnrolled = true
-            });
-            
-            await _context.SaveChangesAsync();
+            var studentOnCourse = _context.StudentsOnCourses.First(soc => soc.StudentId == studentId && soc.CourseId == courseId);
+            studentOnCourse.IsEnrolled = true;
+            studentOnCourse.IsChecked = true;
+
+            var studentOnCourseUpdatedEntity = _context.StudentsOnCourses
+                .Update(studentOnCourse);
+
+            //await _context.SaveChangesAsync();
+            return studentOnCourseUpdatedEntity.Entity;
         }
+
+        throw new ArgumentException("Student or course not found");
     }
 
-    public async Task RemoveStudentFromCourseAsync(int studentId, int courseId)
+    public async Task<StudentOnCourse> RemoveStudentFromCourseAsync(Guid studentId, Guid courseId)
     {
         var student = await _context.Students.FindAsync(studentId);
         var course = await _context.Courses.FindAsync(courseId);
 
         if (student != null && course != null)
         {
-            _context.StudentsOnCourses.Update(
-                new StudentOnCourse
-                {
-                    StudentId = studentId,
-                    CourseId = courseId,
-                    IsEnrolled = false
-                });
+            var studentOnCourse = _context.StudentsOnCourses.First(soc => soc.StudentId == studentId && soc.CourseId == courseId);
+            studentOnCourse.IsEnrolled = false;
 
-            await _context.SaveChangesAsync();
+            var studentOnCourseUpdatedEntity = _context.StudentsOnCourses
+                .Update(studentOnCourse);
+
+            //await _context.SaveChangesAsync();
+            return studentOnCourseUpdatedEntity.Entity;
         }
+
+        throw new ArgumentException("Student or course not found");
     }
 
     // TODO: remove this methos as it's used for algorithm only | or at least try move it to service
-    public async Task MarkCourseAsChecked(int studentId, int courseId)
+    public async Task<StudentOnCourse> MarkCourseAsChecked(Guid studentId, Guid courseId)
     {
         var student = await _context.Students.FindAsync(studentId);
         var course = await _context.Courses.FindAsync(courseId);
 
         if (student != null && course != null)
         {
-            _context.StudentsOnCourses.Update(
-                               new StudentOnCourse
-                               {
-                                   StudentId = studentId,
-                                   CourseId = courseId,
-                                   IsChecked = true
-                               });
+            var studentOnCourse = _context.StudentsOnCourses.First(soc => soc.StudentId == studentId && soc.CourseId == courseId);
+            studentOnCourse.IsChecked = true;
 
-            await _context.SaveChangesAsync();
+            var studentOnCourseUpdatedEntity = _context.StudentsOnCourses
+                .Update(studentOnCourse);
+
+            //await _context.SaveChangesAsync();
+            return studentOnCourseUpdatedEntity.Entity;
         }
+
+        throw new ArgumentException("Student or course not found");
+    }
+
+    public async Task UnenrollEveryone()
+    {
+        await _context.StudentsOnCourses.ForEachAsync(soc =>
+        {
+            soc.IsEnrolled = false;
+            soc.IsChecked = false;
+        });
     }
 }

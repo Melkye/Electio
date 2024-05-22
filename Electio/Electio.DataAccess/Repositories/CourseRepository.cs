@@ -11,34 +11,57 @@ public class CourseRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<Course>> GetAllCoursesAsync()
+    public async Task<IEnumerable<Course>> GetAllAsync()
     {
         return await _context.Courses.ToListAsync();
     }
 
-    public async Task<Course> GetCourseByIdAsync(int id)
+    public async Task<Course> GetCourseByIdAsync(Guid id)
     {
-        return await _context.Courses.FirstOrDefaultAsync(c => c.Id == id);
+        var course = await _context.Courses.FirstOrDefaultAsync(c => c.Id == id);
+        return course;
     }
 
     public async Task<Course> CreateCourseAsync(Course course)
     {
-        _context.Courses.Add(course);
-        await _context.SaveChangesAsync();
-        return course;
+        var createdCourse = await _context.Courses.AddAsync(course);
+        //await _context.SaveChangesAsync();
+        return createdCourse.Entity;
     }
 
     public async Task<Course> UpdateCourseAsync(Course course)
     {
-        _context.Courses.Update(course);
-        await _context.SaveChangesAsync();
-        return course;
+        var updatedCourse = await _context.Courses.AddAsync(course);
+        //await _context.SaveChangesAsync();
+        return updatedCourse.Entity;
     }
 
-    public async Task DeleteCourseAsync(int id)
+    public async Task DeleteCourseAsync(Guid id)
     {
         var course = await _context.Courses.FirstOrDefaultAsync(c => c.Id == id);
         _context.Courses.Remove(course);
-        await _context.SaveChangesAsync();
-    }   
+        //await _context.SaveChangesAsync();
+    }
+
+    public IEnumerable<CourseEnrollment> GetStudentsPerCourse()
+    {
+        var enrollment = _context.StudentsOnCourses
+            .Where(soc => soc.IsEnrolled == true)
+            .Join(_context.Students,
+                soc => soc.StudentId,
+                s => s.Id,
+                (soc, s) => new { soc.CourseId, Student = s })
+            .Join(_context.Courses,
+                courseStudentPair => courseStudentPair.CourseId,
+                course => course.Id,
+                (courseStudentPair, course) => new { course.Title, course.Quota, courseStudentPair.Student })
+            .GroupBy(courseStudentPair => new { courseStudentPair.Title, courseStudentPair.Quota });
+
+        return enrollment.Select(enrollment => new CourseEnrollment
+        {
+            Title = enrollment.Key.Title,
+            Quota = enrollment.Key.Quota,
+            Students = enrollment.Select(e => e.Student)
+        });
+    }
 }

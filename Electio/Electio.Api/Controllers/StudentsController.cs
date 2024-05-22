@@ -1,16 +1,18 @@
 using Electio.BusinessLogic.Services;
 using Electio.BusinessLogic.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Electio.DataAccess.Entities;
+using Electio.DataAccess.Repositories;
 
 namespace Electio.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class StudentController : ControllerBase
+    public class StudentsController : ControllerBase
     {
         private readonly StudentService _studentService;
 
-        public StudentController(StudentService studentService)
+        public StudentsController(StudentService studentService)
         {
             _studentService = studentService;
         }
@@ -21,8 +23,8 @@ namespace Electio.Api.Controllers
             return await _studentService.GetAllAsync();
         }
 
-        [HttpGet("{id:int}")]
-        public async Task<ActionResult<StudentGetDTO>> Get(int id)
+        [HttpGet("{id:Guid}")]
+        public async Task<ActionResult<StudentGetDTO>> Get(Guid id)
         {
             var student = await _studentService.GetByIdAsync(id);
 
@@ -42,13 +44,14 @@ namespace Electio.Api.Controllers
             return CreatedAtAction(nameof(Get), new { id = student.Id }, student);
         }
 
-        // TODO: ActionResult?
-        [HttpPost("placement")]
-        public async Task<IEnumerable<StudentGetDTO>> Post()
+        [HttpPost("add-students")]
+        public async Task<IEnumerable<StudentGetDTO>> PostStudents()
         {
+            if (!(await _studentService.GetAllAsync()).Any())
             {
-                await Post(new()
+                await _studentService.Create(new()
                 {
+                    Name = "Student 98",
                     AverageGrade = 98,
                     CoursesPriorities =
                         new Dictionary<string, int>()
@@ -59,8 +62,9 @@ namespace Electio.Api.Controllers
                             }
                 });
 
-                await Post(new()
+                await _studentService.Create(new()
                 {
+                    Name = "Student 97",
                     AverageGrade = 97,
                     CoursesPriorities =
                         new Dictionary<string, int>()
@@ -72,8 +76,9 @@ namespace Electio.Api.Controllers
                 });
 
 
-                await Post(new()
+                await _studentService.Create(new()
                 {
+                    Name = "Student 96",
                     AverageGrade = 96,
                     CoursesPriorities =
                         new Dictionary<string, int>()
@@ -85,8 +90,9 @@ namespace Electio.Api.Controllers
                 });
 
 
-                await Post(new()
+                await _studentService.Create(new()
                 {
+                    Name = "Student 95",
                     AverageGrade = 95,
                     CoursesPriorities =
                         new Dictionary<string, int>()
@@ -98,8 +104,9 @@ namespace Electio.Api.Controllers
                 });
 
 
-                await Post(new()
+                await _studentService.Create(new()
                 {
+                    Name = "Student 94",
                     AverageGrade = 94,
                     CoursesPriorities =
             new Dictionary<string, int>()
@@ -110,8 +117,9 @@ namespace Electio.Api.Controllers
             }
                 });
 
-                await Post(new()
+                await _studentService.Create(new()
                 {
+                    Name = "Student 93",
                     AverageGrade = 93,
                     CoursesPriorities =
             new Dictionary<string, int>()
@@ -122,8 +130,9 @@ namespace Electio.Api.Controllers
             }
                 });
 
-                await Post(new()
+                await _studentService.Create(new()
                 {
+                    Name = "Student 92",
                     AverageGrade = 92,
                     CoursesPriorities =
             new Dictionary<string, int>()
@@ -134,20 +143,22 @@ namespace Electio.Api.Controllers
             }
                 });
 
-                await Post(new()
+                await _studentService.Create(new()
                 {
-                    AverageGrade = 92,
+                    Name = "Student 91",
+                    AverageGrade = 91,
                     CoursesPriorities =
             new Dictionary<string, int>()
             {
             { "dotnet", 1 },
-            { "java", 2 },
-            { "node.js", 3 }
+            { "node.js", 2 },
+            { "java", 3 }
             }
                 });
 
-                await Post(new()
+                await _studentService.Create(new()
                 {
+                    Name = "Student 90",
                     AverageGrade = 90,
                     CoursesPriorities =
             new Dictionary<string, int>()
@@ -159,6 +170,13 @@ namespace Electio.Api.Controllers
                 });
             }
 
+            return await _studentService.GetAllAsync();
+        }
+
+        // TODO: ActionResult?
+        [HttpPost("placement")]
+        public async Task<IEnumerable<StudentGetDTO>> PostPlacement()
+        {
             await _studentService.ExecuteGradeBasedPlacement();
 
             return Get().Result;

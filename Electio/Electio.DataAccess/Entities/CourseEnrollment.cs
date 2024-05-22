@@ -1,9 +1,9 @@
 ﻿namespace Electio.DataAccess.Entities;
-public class Course
+public class CourseEnrollment
 {
-    public Guid Id { get; set; }
-
     public string Title { get; set; } = string.Empty;
 
     public int Quota { get; set; }
+
+    public IEnumerable<Student> Students { get; set; } = [];
 }
