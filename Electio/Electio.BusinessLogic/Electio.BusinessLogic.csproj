@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Electio.DataAccess\Electio.DataAccess.csproj" />
+    <ProjectReference Include="..\Electio.Generation\Electio.Generation.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,8 +1,8 @@
-﻿using Electio.DataAccess.Enums;
+﻿using Electio.DataAccess.Entities;
+using Electio.DataAccess.Enums;
 
-// TODO: add course description, maybe picture, other stuff | don't forget to update DTOs
-namespace Electio.DataAccess.Entities;
-public class Course
+namespace Electio.BusinessLogic.DTOs;
+public class CourseGetDTO
 {
     public Guid Id { get; set; }
 
@@ -15,5 +15,4 @@ public class Course
     public Faculty Faculty { get; set; }
 
     public StudyComponent StudyComponent { get; set; }
-    //public StudyYear StudyYear { get; set; }
 }

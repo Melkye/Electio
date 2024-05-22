@@ -1,0 +1,20 @@
+﻿// TODO: add attributes to retrieve study component name in ukrainian
+
+namespace Electio.DataAccess.Entities;
+public enum StudyComponent
+{
+    SK1 = 1,
+    SK2 = 2,
+    SK3 = 3,
+    SK4 = 4,
+    SK5 = 5,
+    SK6 = 6,
+    SK7 = 7,
+    SK8 = 8,
+    SK9 = 9,
+    SK10 = 10,
+    SK11 = 11,
+    SK12 = 12,
+    SK13 = 13,
+    SK14 = 14,
+}

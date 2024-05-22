@@ -2,7 +2,6 @@
 using Electio.BusinessLogic.DTOs;
 using Electio.DataAccess;
 using Electio.DataAccess.Entities;
-using Electio.DataAccess.Repositories;
 
 namespace Electio.BusinessLogic.Services;
 public class StudentService
@@ -21,24 +20,53 @@ public class StudentService
 
     public async Task<StudentGetDTO> Create(StudentCreateDTO dto)
     {
-        // TODO: add mapping
         Student student = _mapper.Map<Student>(dto);
         student.Id = Guid.NewGuid();
 
         student = await _unitOfWork.StudentRepository.CreateStudentAsync(student);
 
-        //// await _unitOfWork.SaveChangesAsync();
-        //// TODO: do something to get Id properly
-        //// student = _unitOfWork.StudentRepository.GetAllAsync().Result.Last();
+        return _mapper.Map<StudentGetDTO>(student);
+    }
 
-        foreach (var coursePriority in dto.CoursesPriorities!)
+    // TODO: resolve async/await issue
+    public async Task<IEnumerable<StudentGetDTO>> CreateRandomStudentsAsync()
+    {
+        var createdStudents = new List<StudentGetDTO>();
+        Generator.GenerateStudents().ForEach(async studentDTO =>
         {
-            await _unitOfWork.StudentOnCourseRepository.AddCoursePriorityToStudent(student.Id, coursePriority.Key, coursePriority.Value);
-        };
+            var student = _mapper.Map<Student>(studentDTO);
+            student = await _unitOfWork.StudentRepository.CreateStudentAsync(student);
+            createdStudents.Add(_mapper.Map<StudentGetDTO>(student));
+        });
+        return createdStudents;
+    }
+
+    public async Task<IEnumerable<StudentOnCourse>> SetPriorities(StudentPrioritiesDTO dto)
+    {
+        var student = (await _unitOfWork.StudentRepository.GetAllAsync()).First(s => s.Name == dto.StudentName);
+
+        var courses = await _unitOfWork.CourseRepository.GetAllAsync();
+
+        var coursePriorities = dto.CoursesPriorities.SelectMany(
+            componentCoursesPriorities => componentCoursesPriorities.Value.Select(
+                coursePriority =>
+                    new {
+                        CourseTitle = coursePriority.Key,
+                        Priority = coursePriority.Value
+                    }
+                ));
+
+        var studentsOnCoursesAfterPrioritiesSet = new List<StudentOnCourse>();
+        foreach (var coursePriority in coursePriorities)
+        {
+            var courseId = courses.First(c => c.Title == coursePriority.CourseTitle).Id;
+            studentsOnCoursesAfterPrioritiesSet.Add(
+                await _unitOfWork.StudentOnCourseRepository.AddCoursePriorityToStudent(student.Id, courseId, coursePriority.Priority));
+        }
 
         await _unitOfWork.SaveChangesAsync();
 
-        return _mapper.Map<StudentGetDTO>(student);
+        return studentsOnCoursesAfterPrioritiesSet;
     }
 
     public async Task<IEnumerable<StudentGetDTO>> GetAllAsync()

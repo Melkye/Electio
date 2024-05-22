@@ -47,9 +47,9 @@ public class CoursesController : ControllerBase
 
     // GET: api/<CourseController>
     [HttpGet("placement")]
-    public async Task<IEnumerable<CourseEnrollmentDTO>> GetEnrollment()
+    public IEnumerable<CourseEnrollmentDTO> GetEnrollment()
     {
-        return await _coursesService.GetStudentsPerCourseAsync();
+        return _coursesService.GetStudentsPerCourse();
     }
 
     // GET: api/<CourseController>

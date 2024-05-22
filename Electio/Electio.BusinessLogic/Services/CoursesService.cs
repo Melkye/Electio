@@ -39,7 +39,7 @@ public class CoursesService
         return await _unitOfWork.CourseRepository.GetAllAsync();
     }
 
-    public async Task<IEnumerable<CourseEnrollmentDTO>> GetStudentsPerCourseAsync()
+    public IEnumerable<CourseEnrollmentDTO> GetStudentsPerCourse()
     {
         return _mapper.Map<IEnumerable<CourseEnrollmentDTO>>(_unitOfWork.CourseRepository.GetStudentsPerCourse());
     }

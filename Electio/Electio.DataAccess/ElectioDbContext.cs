@@ -23,6 +23,9 @@ public class ElectioDbContext : DbContext
             entity.Property(e => e.Id).ValueGeneratedOnAdd();
             entity.Property(e => e.Name).IsRequired();
             entity.Property(e => e.AverageGrade).IsRequired();
+            entity.Property(e => e.Specialty).HasConversion<string>().IsRequired();
+            entity.Property(e => e.Faculty).HasConversion<string>().IsRequired();
+            entity.Property(e => e.StudyYear).HasConversion<string>().IsRequired();
         });
 
         modelBuilder.Entity<Course>(entity =>
