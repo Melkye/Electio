@@ -28,6 +28,11 @@ public class StudentRepository
         return createdStudent.Entity;
     }
 
+    public async Task CreateStudentsAsync(IEnumerable<Student> students)
+    {
+        await _context.Students.AddRangeAsync(students);
+    }
+
     public async Task<Student> UpdateStudentAsync(Student student)
     {
         var updatedStudent = await _context.Students.AddAsync(student);

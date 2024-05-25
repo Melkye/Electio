@@ -17,26 +17,22 @@ public class CoursesService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<IEnumerable<Course>> CreateMany() //CourseCreateDTO dto)
+    public async Task CreateRandomCoursesAsync()
     {
-
         if (!(await _unitOfWork.CourseRepository.GetAllAsync()).Any())
         {
-            await _unitOfWork.CourseRepository.CreateCourseAsync(new Course { Id = Guid.NewGuid(), Title = "dotnet", Quota = 3 });
-            await _unitOfWork.CourseRepository.CreateCourseAsync(new Course { Id = Guid.NewGuid(), Title = "node.js", Quota = 3 });
-            await _unitOfWork.CourseRepository.CreateCourseAsync(new Course { Id = Guid.NewGuid(), Title = "java", Quota = 3 });
+            var courses = _mapper.Map<IEnumerable<Course>>(Generator.GenerateCourses());
+            await _unitOfWork.CourseRepository.CreateCoursesAsync(courses);
         }
 
         await _unitOfWork.SaveChangesAsync();
-
-        return await _unitOfWork.CourseRepository.GetAllAsync();
     }
 
-    public async Task<IEnumerable<Course>> GetAllAsync()
+    public async Task<IEnumerable<CourseGetDTO>> GetAllAsync()
     {
-        var students = await _unitOfWork.CourseRepository.GetAllAsync();
+        var courses = await _unitOfWork.CourseRepository.GetAllAsync();
 
-        return await _unitOfWork.CourseRepository.GetAllAsync();
+        return _mapper.Map<IEnumerable<CourseGetDTO>>(courses);
     }
 
     public IEnumerable<CourseEnrollmentDTO> GetStudentsPerCourse()

@@ -15,6 +15,8 @@ public class ElectioDbContext : DbContext
 
     }
 
+
+    // TODO: add OnDeleteCascade
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Student>(entity =>

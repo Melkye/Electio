@@ -29,6 +29,11 @@ public class CourseRepository
         return createdCourse.Entity;
     }
 
+    public async Task CreateCoursesAsync(IEnumerable<Course> courses)
+    {
+        await _context.Courses.AddRangeAsync(courses);
+    }
+
     public async Task<Course> UpdateCourseAsync(Course course)
     {
         var updatedCourse = await _context.Courses.AddAsync(course);

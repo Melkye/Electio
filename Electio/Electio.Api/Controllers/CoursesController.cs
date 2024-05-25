@@ -20,7 +20,7 @@ public class CoursesController : ControllerBase
 
     // GET: api/<CourseController>
     [HttpGet]
-    public async Task<IEnumerable<Course>> Get()
+    public async Task<IEnumerable<CourseGetDTO>> Get()
     {
         return await _coursesService.GetAllAsync();
     }
@@ -40,9 +40,14 @@ public class CoursesController : ControllerBase
 
     // POST api/<CourseController>
     [HttpPost("add-courses")]
-    public async Task<IEnumerable<Course>> PostMany()
+    public async Task<IEnumerable<CourseGetDTO>> PostMany()
     {
-        return await _coursesService.CreateMany();
+        if (!(await _coursesService.GetAllAsync()).Any())
+        {
+            await _coursesService.CreateRandomCoursesAsync();
+        }
+
+        return await _coursesService.GetAllAsync();
     }
 
     // GET: api/<CourseController>

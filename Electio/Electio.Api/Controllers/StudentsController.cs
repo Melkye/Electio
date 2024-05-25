@@ -51,16 +51,23 @@ namespace Electio.Api.Controllers
             {
                 await _studentService.CreateRandomStudentsAsync();
             }
-                return await _studentService.GetAllAsync();
+
+            return await _studentService.GetAllAsync();
+        }
+
+        [HttpPost("set-random-priorities")]
+        public async Task<IEnumerable<IEnumerable<StudentOnCourse>>> SetRandomPriorities()
+        {
+            return await _studentService.SetRandomPriorities();
         }
 
         // TODO: ActionResult?
-        [HttpPost("placement")]
-        public async Task<IEnumerable<StudentGetDTO>> PostPlacement()
+        [HttpPost("execute-placement")]
+        public async Task<IEnumerable<StudentGetDTO>> ExecutePlacementAlgorithm()
         {
             await _studentService.ExecuteGradeBasedPlacement();
 
-            return Get().Result;
+            return await Get();
         }
 
         //[HttpPut("{id}")]

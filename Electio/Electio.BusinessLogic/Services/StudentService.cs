@@ -29,19 +29,28 @@ public class StudentService
     }
 
     // TODO: resolve async/await issue
-    public async Task<IEnumerable<StudentGetDTO>> CreateRandomStudentsAsync()
+    // TODO: add a batch creation method instead of one by one
+    public async Task CreateRandomStudentsAsync()
     {
-        var createdStudents = new List<StudentGetDTO>();
-        Generator.GenerateStudents().ForEach(async studentDTO =>
+        //var createdStudents = new List<StudentGetDTO>();
+        if (!(await _unitOfWork.StudentRepository.GetAllAsync()).Any())
         {
-            var student = _mapper.Map<Student>(studentDTO);
-            student = await _unitOfWork.StudentRepository.CreateStudentAsync(student);
-            createdStudents.Add(_mapper.Map<StudentGetDTO>(student));
-        });
-        return createdStudents;
+            var students = _mapper.Map<IEnumerable<Student>>(Generator.GenerateStudents());
+            await _unitOfWork.StudentRepository.CreateStudentsAsync(students);
+        }
+
+        //Generator.GenerateStudents().ForEach(async studentDTO =>
+        //{
+        //    var student = _mapper.Map<Student>(studentDTO);
+        //    student = await _unitOfWork.StudentRepository.CreateStudentAsync(student);
+        //    createdStudents.Add(_mapper.Map<StudentGetDTO>(student));
+        //});
+        //return createdStudents;
+        await _unitOfWork.SaveChangesAsync();
     }
 
-    public async Task<IEnumerable<StudentOnCourse>> SetPriorities(StudentPrioritiesDTO dto)
+    // TODO: change from StudentOnCourse
+    public async Task<List<StudentOnCourse>> SetPriorities(StudentPrioritiesDTO dto)
     {
         var student = (await _unitOfWork.StudentRepository.GetAllAsync()).First(s => s.Name == dto.StudentName);
 
@@ -67,6 +76,25 @@ public class StudentService
         await _unitOfWork.SaveChangesAsync();
 
         return studentsOnCoursesAfterPrioritiesSet;
+    }
+
+    public async Task<IEnumerable<IEnumerable<StudentOnCourse>>> SetRandomPriorities()
+    {
+        // TODO: get rid of mapping here | create a special servise foe placement?
+        var students = await GetAllAsync();
+        var studentsDTOs = _mapper.Map<List<StudentGetDTO>>(students);
+        var courses = await _unitOfWork.CourseRepository.GetAllAsync();
+        var coursesDTOs = _mapper.Map<List<CourseGetDTO>>(courses);
+
+        var dtos = Generator.GenerateStudentPriorities(studentsDTOs, coursesDTOs);
+
+        var results = new List<List<StudentOnCourse>>();
+        foreach(var dto in dtos)
+        {
+            results.Add(await SetPriorities(dto));
+        }
+
+        return results;
     }
 
     public async Task<IEnumerable<StudentGetDTO>> GetAllAsync()
@@ -98,7 +126,9 @@ public class StudentService
         {
             var currentStudent = unassignedStudents.Last();
 
-            var highestPriorityNotCheckedCourseId = (await _unitOfWork.StudentOnCourseRepository.GetCoursesWithPrioritiesByStudentIdAsync(currentStudent.Id))
+            var studentCoursesPriotities = await _unitOfWork.StudentOnCourseRepository.GetCoursesWithPrioritiesByStudentIdAsync(currentStudent.Id);
+
+            var highestPriorityNotCheckedCourseId = studentCoursesPriotities
                 .Where(soc => soc.IsChecked == false)
                 .OrderBy(soc => soc.Priority).First().CourseId;
 
