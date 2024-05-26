@@ -1,4 +1,28 @@
-<div *ngFor="let student of students">
-    <a [routerLink]="['/students', student.id]">{{ student.name }}</a>
+<!-- student-list.component.html -->
+<div class="container">
+    <mat-form-field class="filter-input">
+      <input matInput placeholder="Filter by name" [(ngModel)]="filter">
+    </mat-form-field>
+  
+    <mat-table [dataSource]="dataSource" matSort>
+  
+      <!-- Define table columns -->
+      <ng-container matColumnDef="name">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
+        <mat-cell *matCellDef="let student">{{ student.name }}</mat-cell>
+      </ng-container>
+  
+      <ng-container matColumnDef="grade">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Grade</mat-header-cell>
+        <mat-cell *matCellDef="let student">{{ student.grade }}</mat-cell>
+      </ng-container>
+  
+      <!-- Add more columns as needed -->
+  
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+  
+    <mat-paginator [pageSizeOptions]="[5, 10, 25]" showFirstLastButtons></mat-paginator>
   </div>
   

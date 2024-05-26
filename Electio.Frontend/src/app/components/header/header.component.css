@@ -1,35 +1,19 @@
-.header {
-    background-color: #007bff; /* Primary blue color */
+.brand-link {
     color: white;
-    padding: 10px 20px;
-  }
-  
-  .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .brand {
-    font-size: 1.5em;
+    text-decoration: none;
     font-weight: bold;
-    text-decoration: none;
+    font-size: 1.5em;
+  }
+  
+  .spacer {
+    flex: 1 1 auto;
+  }
+  
+  a[mat-button] {
     color: white;
   }
   
-  .nav-links {
-    list-style: none;
-    display: flex;
-    gap: 20px;
-  }
-  
-  .nav-links a {
-    text-decoration: none;
-    color: white;
-    font-size: 1.1em;
-  }
-  
-  .nav-links a:hover {
-    text-decoration: underline;
+  a[mat-button]:hover {
+    background-color: rgba(255, 255, 255, 0.1);
   }
   

@@ -1,21 +1,18 @@
 .footer {
-    background-color: #007bff; /* Primary blue color */
-    color: white;
-    padding: 10px 20px;
-    text-align: center;
     position: fixed;
-    width: 100%;
     bottom: 0;
+    width: 100%;
+    justify-content: center;
   }
   
-  .footer .brand {
-    font-size: 1.5em;
-    font-weight: bold;
-    text-decoration: none;
+  .brand-link {
     color: white;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.5em;
   }
   
-  .footer .brand:hover {
-    text-decoration: underline;
+  a[mat-button]:hover {
+    background-color: rgba(255, 255, 255, 0.1);
   }
   
