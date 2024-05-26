@@ -15,7 +15,7 @@ interface Course {
   providedIn: 'root'
 })
 export class CoursesService {
-  private apiUrl = 'http://localhost:5000/api/Courses';
+  private apiUrl = 'http://localhost:5207/api/Courses';
 
   constructor(private http: HttpClient) {}
 

@@ -1,0 +1,21 @@
+.footer {
+    background-color: #007bff; /* Primary blue color */
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+  }
+  
+  .footer .brand {
+    font-size: 1.5em;
+    font-weight: bold;
+    text-decoration: none;
+    color: white;
+  }
+  
+  .footer .brand:hover {
+    text-decoration: underline;
+  }
+  

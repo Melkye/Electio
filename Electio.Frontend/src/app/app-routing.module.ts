@@ -8,9 +8,9 @@ import { StudentDetailComponent } from './components/student-detail/student-deta
 const routes: Routes = [
   { path: '', redirectTo: '/courses', pathMatch: 'full' },
   { path: 'courses', component: CourseListComponent },
-  { path: 'course/:id', component: CourseDetailComponent },
+  { path: 'courses/:id', component: CourseDetailComponent },
   { path: 'students', component: StudentListComponent },
-  { path: 'student/:id', component: StudentDetailComponent }
+  { path: 'students/:id', component: StudentDetailComponent }
 ];
 
 @NgModule({
