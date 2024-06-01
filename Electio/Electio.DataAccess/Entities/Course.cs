@@ -10,6 +10,7 @@ public class Course
 
     public int Quota { get; set; }
 
+    // TODO: decide how to store it in db
     public List<Specialty> Specialties { get; set; } = [];
 
     public Faculty Faculty { get; set; }

@@ -39,13 +39,6 @@ public class StudentService
             await _unitOfWork.StudentRepository.CreateStudentsAsync(students);
         }
 
-        //Generator.GenerateStudents().ForEach(async studentDTO =>
-        //{
-        //    var student = _mapper.Map<Student>(studentDTO);
-        //    student = await _unitOfWork.StudentRepository.CreateStudentAsync(student);
-        //    createdStudents.Add(_mapper.Map<StudentGetDTO>(student));
-        //});
-        //return createdStudents;
         await _unitOfWork.SaveChangesAsync();
     }
 

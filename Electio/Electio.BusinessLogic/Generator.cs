@@ -85,9 +85,10 @@ public static class Generator
             .Rules((f, s) =>
             {
                 s.Name = f.Random.Bool()
-                    ? "Студент " + f.Name.FullName(gender: Bogus.DataSets.Name.Gender.Male)
-                    : "Студентка " + f.Name.FullName(gender: Bogus.DataSets.Name.Gender.Female);
-                s.AverageGrade = f.Random.GaussianDouble(averageGradeMean, averageGradeStdDev);
+                    ? f.Name.FullName(gender: Bogus.DataSets.Name.Gender.Male)
+                    : f.Name.FullName(gender: Bogus.DataSets.Name.Gender.Female);
+                s.AverageGrade = Math.Max(60,
+                    Math.Min(f.Random.GaussianDouble(averageGradeMean, averageGradeStdDev), 100));
                 // TODO: make specitlities look realistic
                 s.Specialty = f.PickRandom(specialties);
                 s.Faculty = faculty;
