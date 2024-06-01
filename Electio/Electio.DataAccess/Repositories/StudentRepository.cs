@@ -46,4 +46,26 @@ public class StudentRepository
         //_context.Students.Remove(student);
         await _context.SaveChangesAsync();
     }
+
+    public IEnumerable<CourseEnrollment> GetStudentsPerCourse()
+    {
+        var enrollment = _context.StudentsOnCourses
+            .Where(soc => soc.IsEnrolled)
+            .Join(_context.Students,
+                soc => soc.StudentId,
+                s => s.Id,
+                (soc, s) => new { soc.CourseId, Student = s })
+            .Join(_context.Courses,
+                courseStudentPair => courseStudentPair.CourseId,
+                course => course.Id,
+                (courseStudentPair, course) => new { course.Title, course.Quota, courseStudentPair.Student })
+            .GroupBy(courseStudentPair => new { courseStudentPair.Title, courseStudentPair.Quota });
+
+        return enrollment.Select(enrollment => new CourseEnrollment
+        {
+            Title = enrollment.Key.Title,
+            Quota = enrollment.Key.Quota,
+            Students = enrollment.Select(e => e.Student)
+        });
+    }
 }

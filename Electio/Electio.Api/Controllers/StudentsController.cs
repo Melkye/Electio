@@ -36,6 +36,32 @@ namespace Electio.Api.Controllers
             return student;
         }
 
+        [HttpGet("{id:Guid}/placement")]
+        public async Task<IEnumerable<CourseGetDTO>> GetStudentCourses(Guid id)
+        {
+            var courses = await _studentService.GetStudentCoursesAsync(id);
+
+            if (courses == null)
+            {
+                return (IEnumerable<CourseGetDTO>)NotFound();
+            }
+
+            return courses;
+        }
+
+        [HttpGet("{id:Guid}/priorities")]
+        public async Task<IEnumerable<StudentOnCourse>> GetStudentPriorities(Guid id)
+        {
+            var coursesWithPriorities = await _studentService.GetStudentPrioritiesAsync(id);
+
+            if (coursesWithPriorities == null)
+            {
+                return (IEnumerable<StudentOnCourse>)NotFound();
+            }
+
+            return coursesWithPriorities;
+        }
+
         [HttpPost]
         public async Task<ActionResult<StudentGetDTO>> Post([FromBody] StudentCreateDTO studentDTO)
         {
@@ -69,6 +95,8 @@ namespace Electio.Api.Controllers
 
             return await Get();
         }
+
+
 
         //[HttpPut("{id}")]
         //public async Task<IActionResult> Put(int id, [FromBody] StudentCreateDTO studentDTO)

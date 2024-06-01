@@ -12,16 +12,14 @@ public class StudentOnCourseRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<Course>> GetCoursesByStudentIdAsync(Guid studentId)
+    public async Task<IEnumerable<Course>> GetEnrolledCoursesByStudentIdAsync(Guid studentId)
     {
-        return await _context.Courses.Join(
-            _context.StudentsOnCourses,
-            course => course.Id,
-            studentOnCourse => studentOnCourse.CourseId,
-            (course, studentOnCourse) => new { course, studentOnCourse })
-            .Where(t => t.studentOnCourse.StudentId == studentId)
-            .Where(t => t.studentOnCourse.IsEnrolled == true)
-            .Select(t => t.course)
+        return await _context.StudentsOnCourses
+            .Where(soc => soc.StudentId == studentId && soc.IsEnrolled)
+            .Join(_context.Courses,
+                soc => soc.CourseId,
+                course => course.Id,
+                (soc, course) => course)
             .ToListAsync();
     }
 
@@ -29,6 +27,7 @@ public class StudentOnCourseRepository
     {
         return await _context.StudentsOnCourses
             .Where(soc => soc.StudentId == studentId)
+            .OrderBy(soc => soc.Priority)
             .ToListAsync();
     }
 

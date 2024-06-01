@@ -21,8 +21,20 @@ public class CoursesService
     {
         if (!(await _unitOfWork.CourseRepository.GetAllAsync()).Any())
         {
-            var courses = _mapper.Map<IEnumerable<Course>>(Generator.GenerateCourses());
-            await _unitOfWork.CourseRepository.CreateCoursesAsync(courses);
+            var coursesSK1 = _mapper.Map<IEnumerable<Course>>(
+                Generator.GenerateCoursesForStudyComponent(studyComponent: StudyComponent.SK1));
+
+            var coursesSK2 = _mapper.Map<IEnumerable<Course>>(
+                Generator.GenerateCoursesForStudyComponent(studyComponent: StudyComponent.SK2));
+
+            var coursesSK3 = _mapper.Map<IEnumerable<Course>>(
+                Generator.GenerateCoursesForStudyComponent(studyComponent: StudyComponent.SK3));
+
+            var coursesSK4 = _mapper.Map<IEnumerable<Course>>(
+                Generator.GenerateCoursesForStudyComponent(studyComponent: StudyComponent.SK4));
+
+            await _unitOfWork.CourseRepository.CreateCoursesAsync(
+                coursesSK1.Union(coursesSK2).Union(coursesSK3).Union(coursesSK4));
         }
 
         await _unitOfWork.SaveChangesAsync();
@@ -39,6 +51,7 @@ public class CoursesService
     {
         return _mapper.Map<IEnumerable<CourseEnrollmentDTO>>(_unitOfWork.CourseRepository.GetStudentsPerCourse());
     }
+
 
     public async Task UnenrollEveryone()
     {

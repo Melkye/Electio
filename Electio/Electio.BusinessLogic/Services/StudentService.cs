@@ -2,6 +2,7 @@
 using Electio.BusinessLogic.DTOs;
 using Electio.DataAccess;
 using Electio.DataAccess.Entities;
+using Electio.DataAccess.Enums;
 
 namespace Electio.BusinessLogic.Services;
 public class StudentService
@@ -35,8 +36,14 @@ public class StudentService
         //var createdStudents = new List<StudentGetDTO>();
         if (!(await _unitOfWork.StudentRepository.GetAllAsync()).Any())
         {
-            var students = _mapper.Map<IEnumerable<Student>>(Generator.GenerateStudents());
-            await _unitOfWork.StudentRepository.CreateStudentsAsync(students);
+            var studentsFirstStudyYear = _mapper.Map<IEnumerable<Student>>(
+                Generator.GenerateStudentsForStudyYear(studyYear: StudyYear.First));
+
+            var studentsSecondStudyYear = _mapper.Map<IEnumerable<Student>>(
+                Generator.GenerateStudentsForStudyYear(studyYear: StudyYear.Second));
+
+            await _unitOfWork.StudentRepository.CreateStudentsAsync(
+                studentsFirstStudyYear.Union(studentsSecondStudyYear));
         }
 
         await _unitOfWork.SaveChangesAsync();
@@ -176,8 +183,14 @@ public class StudentService
         await _unitOfWork.SaveChangesAsync();
     }
 
-    public async Task<IEnumerable<Course>> GetStudentCourses(Guid studentId)
+    public async Task<IEnumerable<CourseGetDTO>> GetStudentCoursesAsync(Guid studentId)
     {
-        return await _unitOfWork.StudentOnCourseRepository.GetCoursesByStudentIdAsync(studentId);
+        var courses = await _unitOfWork.StudentOnCourseRepository.GetEnrolledCoursesByStudentIdAsync(studentId);
+        return _mapper.Map<IEnumerable<CourseGetDTO>>(courses);
+    }
+
+    public async Task<IEnumerable<StudentOnCourse>> GetStudentPrioritiesAsync(Guid studentId)
+    {
+        return await _unitOfWork.StudentOnCourseRepository.GetCoursesWithPrioritiesByStudentIdAsync(studentId);
     }
 }
