@@ -1,4 +1,19 @@
-/* You can add global styles to this file, and also import other style files */
-/* @import "~@angular/material/prebuilt-themes/indigo-pink.css"; */
-/* @import "~@angular/material/core/theming/prebuilt/indigo-pink.css";
-@import "~@angular/material/core/theming/all-theme"; */
+.brand-link {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.5em;
+  }
+  
+  .spacer {
+    flex: 1 1 auto;
+  }
+  
+  a[mat-button] {
+    color: white;
+  }
+  
+  a[mat-button]:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  

@@ -1,6 +1,6 @@
-// student-list.component.ts
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Student } from '../../models/student.model';
 import { StudentsService } from '../../services/students.service';
@@ -12,15 +12,24 @@ import { StudentsService } from '../../services/students.service';
 })
 export class StudentListComponent implements OnInit {
   dataSource = new MatTableDataSource<Student>();
-  displayedColumns: string[] = ['name', 'grade']; // Add more column names if needed
+  displayedColumns: string[] = [
+    'name',
+    'averageGrade',
+    'faculty',
+    'specialty',
+    //'group',
+    'studyYear',
+  ];
   filter: string = '';
 
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
+  @ViewChild(MatSort, { static: true }) sort!: MatSort;
 
   constructor(private studentService: StudentsService) {}
 
   ngOnInit(): void {
     this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
     this.fetchStudents();
   }
 

@@ -1,4 +1,22 @@
-<div *ngFor="let course of courses">
-    <a [routerLink]="['/courses', course.id]">{{ course.title }}</a>
+<!-- course-list.component.html -->
+<div class="container">
+    <h2>Courses</h2>
+    <div class="course-cards">
+      <mat-card *ngFor="let course of courses">
+        <mat-card-header>
+          <mat-card-title center>{{ course.title }}</mat-card-title>
+          <!-- <mat-card-subtitle>{{ course. }}</mat-card-subtitle> -->
+        </mat-card-header>
+        <mat-card-content>
+          <!-- <p>{{ course.description }}</p> -->
+          <ol>
+            <li *ngFor="let student of getEnrollmentsForCourse(course)?.students">
+                    <a [routerLink]="['/students', student.id]">{{ student.name }}</a>
+              <!-- Add other enrollment details as needed -->
+            </li>
+          </ol>
+        </mat-card-content>
+      </mat-card>
+    </div>
   </div>
   

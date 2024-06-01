@@ -8,21 +8,41 @@
   
       <!-- Define table columns -->
       <ng-container matColumnDef="name">
-        <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
-        <mat-cell *matCellDef="let student">{{ student.name }}</mat-cell>
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Ім'я</mat-header-cell>
+        <mat-cell *matCellDef="let student">
+            <a [routerLink]="['/students', student.id]">{{ student.name }}</a></mat-cell>
       </ng-container>
-  
-      <ng-container matColumnDef="grade">
-        <mat-header-cell *matHeaderCellDef mat-sort-header>Grade</mat-header-cell>
-        <mat-cell *matCellDef="let student">{{ student.grade }}</mat-cell>
+
+      <ng-container matColumnDef="averageGrade">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Середній бал</mat-header-cell>
+        <mat-cell *matCellDef="let student">{{ student.averageGrade | number: '1.2-2'}}</mat-cell>
       </ng-container>
-  
+
+        <ng-container matColumnDef="faculty">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Факультет</mat-header-cell>
+            <mat-cell *matCellDef="let student">{{ student.faculty }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="specialty">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Спеціальність</mat-header-cell>
+            <mat-cell *matCellDef="let student">{{ student.specialty }}</mat-cell>
+        </ng-container>
+
+        <!-- <ng-container matColumnDef="group">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Група</mat-header-cell>
+            <mat-cell *matCellDef="let student">{{ student.group }}</mat-cell>
+        </ng-container> -->
+
+        <ng-container matColumnDef="studyYear">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Курс</mat-header-cell>
+            <mat-cell *matCellDef="let student">{{ student.studyYear }}</mat-cell>
+        </ng-container>
       <!-- Add more columns as needed -->
   
       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
       <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
     </mat-table>
   
-    <mat-paginator [pageSizeOptions]="[5, 10, 25]" showFirstLastButtons></mat-paginator>
+    <mat-paginator [pageSizeOptions]="[10, 25]" showFirstLastButtons></mat-paginator>
   </div>
   
