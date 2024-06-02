@@ -52,6 +52,10 @@ public class CoursesService
         return _mapper.Map<IEnumerable<CourseEnrollmentDTO>>(_unitOfWork.CourseRepository.GetStudentsPerCourse());
     }
 
+    public CourseEnrollmentDTO GetStudentsPerCourse(Guid courseId)
+    {
+        return _mapper.Map<CourseEnrollmentDTO>(_unitOfWork.CourseRepository.GetStudentsPerCourse(courseId));
+    }
 
     public async Task UnenrollEveryone()
     {
@@ -59,5 +63,12 @@ public class CoursesService
         await _unitOfWork.SaveChangesAsync();
 
         //return await GetStudentsPerCourseAsync();
+    }
+
+    public async Task<Guid> GetCourseIdByTitleAsync(string title)
+    {
+        var courseId = await _unitOfWork.CourseRepository.GetCourseIdByTitleAsync(title);
+
+        return courseId;
     }
 }

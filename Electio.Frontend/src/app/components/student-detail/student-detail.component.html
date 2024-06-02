@@ -10,6 +10,45 @@
         <div>Факультет: {{ student.faculty }}</div>
         <div>Спеціальність: {{ student.specialty }}</div>
         <div>Курс: {{ student.studyYear }}</div>
+
+            <!-- <h3>Enrolled Courses:</h3>
+            <div *ngFor="let course of studentCourses">
+                <span><a [routerLink]="['/courses', course.id]">{{ course.title }}</a></span>
+                <span> Priority: {{ getCoursePriority(course.id) }}</span>
+            </div> -->
+          <div *ngIf="isPlacementExecuted()">
+            <h3>Enrolled Courses:</h3>
+            <div *ngFor="let studyComponentGroup of studentPriorities.coursesPriorities | keyvalue">
+              <!-- Study component title -->
+                <h4>{{ studyComponentGroup.key }}</h4> 
+
+                <div *ngFor="let coursePriority of studyComponentGroup.value | keyvalue">
+                    <div *ngIf="isStudentEnrolled(coursePriority.key)">
+                        <span>
+                            <a [routerLink]="['/courses', getCourseId(coursePriority.key)]">{{ coursePriority.key }}</a>
+                          </span>
+                          <span> Priority: {{ getCoursePriority(coursePriority.key) }}</span>
+                    </div>
+              </div>
+            </div>
+          </div>
+          
+
+          <div>abubaabubaabubaabubaabubaabubaabubaabubaabubaabubaabubaabubaabubaabubaabubaabubaabubaabubaabubaabuba</div>
+          <!-- <div *ngIf="!isPlacementExecuted()"> -->
+            <div *ngFor="let studyComponentGroup of availableCoursesByStudyComponent | keyvalue">
+              <!-- Study component title -->
+                <h4>{{ studyComponentGroup.key }}</h4> 
+                <div *ngFor="let courseTitle of studyComponentGroup.value">
+                    <span>
+                        <a [routerLink]="['/courses', getCourseId(courseTitle)]">{{ courseTitle }}</a>
+                        <!-- <div>{{courseDescriptionPair.value}}</div> -->
+                      </span>
+                      <input type="number" [(ngModel)]="coursePrioritiesToSet[studyComponentGroup.key][courseTitle]" min="1">
+                </div>
+            </div>
+            <button mat-button color="primary" (click)="submitPriorities()">Submit Priorities</button>
+          <!-- </div> -->
     </mat-card-content>
   </mat-card>
   

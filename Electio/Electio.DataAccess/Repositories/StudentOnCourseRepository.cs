@@ -23,10 +23,17 @@ public class StudentOnCourseRepository
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<StudentOnCourse>> GetCoursesWithPrioritiesByStudentIdAsync(Guid studentId)
+    public async Task<IEnumerable<StudentOnCourse>> GetCoursesWithPrioritiesByStudentIdAsync(Guid studentId, StudyComponent studyComponent)
     {
+        // TODO: check if the following comment is still valid
+        // TODO: algo should be fixed to work on many StudyComponents, not one by one and filter here to match that
+        // disciplines that are in the specific study component group
         return await _context.StudentsOnCourses
             .Where(soc => soc.StudentId == studentId)
+            .Where(soc =>
+                    _context.Courses
+                        .Where(c => c.StudyComponent == studyComponent)
+                        .Any(c => c.Id == soc.CourseId))
             .OrderBy(soc => soc.Priority)
             .ToListAsync();
     }

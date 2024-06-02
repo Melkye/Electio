@@ -1,10 +1,10 @@
 <mat-card class="course-card">
     <mat-card-header>
-      <mat-card-title>{{ course.name }}</mat-card-title>
-      <mat-card-subtitle>Code: {{ course.code }}</mat-card-subtitle>
+      <mat-card-title>{{ course.title }}</mat-card-title>
+      <!-- <mat-card-subtitle>Code: {{ course.code }}</mat-card-subtitle> -->
     </mat-card-header>
     <mat-card-content>
-      <p>{{ course.description }}</p>
+      <!-- <p>{{ course.description }}</p> -->
       <mat-list *ngIf="students.length > 0">
         <h3>Enrolled Students:</h3>
         <mat-list-item *ngFor="let student of students">

@@ -26,17 +26,17 @@ public class CoursesController : ControllerBase
     }
 
     // GET api/<CourseController>/5
-    [HttpGet("{id}")]
-    public string Get(int id)
-    {
-        return "value";
-    }
+    //[HttpGet("{id}")]
+    //public string Get(int id)
+    //{
+    //    return "value";
+    //}
 
     // POST api/<CourseController>
-    [HttpPost]
-    public void Post([FromBody] string value)
-    {
-    }
+    //[HttpPost]
+    //public void Post([FromBody] string value)
+    //{
+    //}
 
     // POST api/<CourseController>
     [HttpPost("add-courses")]
@@ -55,6 +55,12 @@ public class CoursesController : ControllerBase
     public IEnumerable<CourseEnrollmentDTO> GetEnrollment()
     {
         return _coursesService.GetStudentsPerCourse();
+    }
+
+    [HttpGet("placement/{id:Guid}")]
+    public CourseEnrollmentDTO GetEnrollmentForCourse(Guid id)
+    {
+        return _coursesService.GetStudentsPerCourse(id);
     }
 
     // GET: api/<CourseController>
@@ -77,4 +83,11 @@ public class CoursesController : ControllerBase
     //public void Delete(int id)
     //{
     //}
+
+    // get id by title
+    [HttpGet("get-id-by-title/{title}")]
+    public async Task<Guid> GetIdByTitle(string title)
+    {
+        return await _coursesService.GetCourseIdByTitleAsync(title);
+    }
 }

@@ -69,4 +69,35 @@ public class CourseRepository
             Students = enrollment.Select(e => e.Student)
         });
     }
+
+    public CourseEnrollment GetStudentsPerCourse(Guid courseId)
+    {
+        var enrollment = _context.StudentsOnCourses
+            .Where(soc => soc.CourseId == courseId)
+            .Where(soc => soc.IsEnrolled == true)
+            .Join(_context.Students,
+                soc => soc.StudentId,
+                s => s.Id,
+                (soc, s) => new { soc.CourseId, Student = s })
+            .Join(_context.Courses,
+                courseStudentPair => courseStudentPair.CourseId,
+                course => course.Id,
+                (courseStudentPair, course) => new { course.Title, course.Quota, courseStudentPair.Student })
+            .GroupBy(courseStudentPair => new { courseStudentPair.Title, courseStudentPair.Quota });
+
+        return enrollment.Select(enrollment => new CourseEnrollment
+        {
+            Title = enrollment.Key.Title,
+            Quota = enrollment.Key.Quota,
+            Students = enrollment.Select(e => e.Student)
+        }).Single();
+    }
+
+    public async Task<Guid> GetCourseIdByTitleAsync(string title)
+    {
+        return await _context.Courses
+            .Where(c => c.Title == title)
+            .Select(c => c.Id)
+            .FirstOrDefaultAsync();
+    }
 }

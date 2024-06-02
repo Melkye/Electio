@@ -1,6 +1,13 @@
 <!-- course-list.component.html -->
 <div class="container">
     <h2>Courses</h2>
+
+    <button mat-raised-button 
+          [color]="isPlacementExecuted() ? 'accent' : 'primary'" 
+          (click)="runPlacementAlgorithm()">
+    {{ isPlacementExecuted() ? 'Знову розподілити студентство' : 'Розподілити студентство' }}
+  </button>
+
     <div class="course-cards">
       <mat-card *ngFor="let course of courses">
         <mat-card-header>

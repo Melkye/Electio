@@ -3,6 +3,7 @@ using Electio.BusinessLogic.DTOs;
 using Electio.DataAccess;
 using Electio.DataAccess.Entities;
 using Electio.DataAccess.Enums;
+using Electio.DataAccess.Repositories;
 
 namespace Electio.BusinessLogic.Services;
 public class StudentService
@@ -112,7 +113,7 @@ public class StudentService
     }
 
     // TODO: consider moving it to StudentOnCourseService
-    public async Task ExecuteGradeBasedPlacement()
+    public async Task ExecuteGradeBasedPlacement(StudyComponent studyComponent)
     {
         // NOTE: courses in Student should be ordered from highest(1) to lowest(len) priority
         // NOTE: consider ordering from lowest to highest to remove at last pos
@@ -126,7 +127,18 @@ public class StudentService
         {
             var currentStudent = unassignedStudents.Last();
 
-            var studentCoursesPriotities = await _unitOfWork.StudentOnCourseRepository.GetCoursesWithPrioritiesByStudentIdAsync(currentStudent.Id);
+            // TODO: fix algo | this is now priotities by SK
+            var studentCoursesPriotities = await _unitOfWork.StudentOnCourseRepository
+                .GetCoursesWithPrioritiesByStudentIdAsync(currentStudent.Id, studyComponent);
+
+            // TODO: hack to filter students who don't choose the specified study component
+            // TODO: should update the unassigned students list to get only those students
+            // who's study year matches the study conponent
+            if (!studentCoursesPriotities.Any())
+            {
+                unassignedStudents.Remove(currentStudent);
+                continue;
+            }
 
             var highestPriorityNotCheckedCourseId = studentCoursesPriotities
                 .Where(soc => soc.IsChecked == false)
@@ -189,8 +201,58 @@ public class StudentService
         return _mapper.Map<IEnumerable<CourseGetDTO>>(courses);
     }
 
-    public async Task<IEnumerable<StudentOnCourse>> GetStudentPrioritiesAsync(Guid studentId)
+    public async Task<StudentPrioritiesDTO> GetStudentPrioritiesAsync(Guid studentId)
     {
-        return await _unitOfWork.StudentOnCourseRepository.GetCoursesWithPrioritiesByStudentIdAsync(studentId);
+        var studyComponents = Enum.GetValues<StudyComponent>();
+        var studentOnCourses = new List<StudentOnCourse>();
+
+        var studentPriorities = new StudentPrioritiesDTO
+        {
+            StudentName = (await _unitOfWork.StudentRepository.GetByIdAsync(studentId)).Name,
+            CoursesPriorities = new Dictionary<StudyComponent, Dictionary<string, int>>()
+        };
+
+        foreach (var studyComponent in studyComponents)
+        {
+            var coursesPriotities = 
+                _unitOfWork.StudentOnCourseRepository.GetCoursesWithPrioritiesByStudentIdAsync(studentId, studyComponent)
+                .Result
+                .ToDictionary(soc => 
+                    _unitOfWork.CourseRepository.GetAllAsync().Result.First(c => c.Id == soc.CourseId).Title,
+                    soc => soc.Priority);
+
+            if (coursesPriotities.Any())
+                studentPriorities.CoursesPriorities.Add(studyComponent, coursesPriotities);
+        }
+
+        return studentPriorities;
+
+        //var studentPriorities = new StudentPrioritiesDTO
+        //{
+        //    StudentName = (await _unitOfWork.StudentRepository.GetByIdAsync(studentId)).Name,
+        //    CoursesPriorities = studentOnCourses
+        //        .GroupBy(soc => soc.Course.StudyComponent)
+        //        .ToDictionary(
+        //            group => group.Key,
+        //            group => group.ToDictionary(
+        //                soc => soc.Course.Title,
+        //                soc => soc.Priority))
+        //};
+    }
+
+    public async Task<IDictionary<StudyComponent, List<string>>> GetAvailableCourses(Guid id)
+    {
+        var studyYear = _unitOfWork.StudentRepository.GetByIdAsync(id).Result.StudyYear;
+
+        var availableStudyComponents = Generator.GetStudyComponentsAvailableToStudyYear(studyYear);
+
+        var courses = await _unitOfWork.CourseRepository.GetAllAsync();
+
+        var availableCourses = courses
+            .GroupBy(c => c.StudyComponent, c => c.Title)
+            .Where(group => availableStudyComponents.Contains(group.Key))
+            .ToDictionary(group => group.Key, group => group.ToList());
+
+        return availableCourses;
     }
 }

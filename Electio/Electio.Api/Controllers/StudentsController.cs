@@ -50,16 +50,23 @@ namespace Electio.Api.Controllers
         }
 
         [HttpGet("{id:Guid}/priorities")]
-        public async Task<IEnumerable<StudentOnCourse>> GetStudentPriorities(Guid id)
+        public async Task<ActionResult<StudentPrioritiesDTO>> GetStudentPriorities(Guid id)
         {
             var coursesWithPriorities = await _studentService.GetStudentPrioritiesAsync(id);
 
             if (coursesWithPriorities == null)
             {
-                return (IEnumerable<StudentOnCourse>)NotFound();
+                return NotFound();
             }
 
             return coursesWithPriorities;
+        }
+
+
+        [HttpGet("{id:guid}/available-courses")]
+        public async Task<IDictionary<StudyComponent, List<string>>> SetStudentPriorities(Guid id)
+        {
+            return await _studentService.GetAvailableCourses(id);
         }
 
         [HttpPost]
@@ -87,11 +94,24 @@ namespace Electio.Api.Controllers
             return await _studentService.SetRandomPriorities();
         }
 
+        [HttpPost("{id:guid}/priorities")]
+        public async Task<IEnumerable<StudentOnCourse>> SetStudentPriorities([FromBody] StudentPrioritiesDTO dto)
+        {
+            return await _studentService.SetPriorities(dto);
+        }
+
         // TODO: ActionResult?
         [HttpPost("execute-placement")]
         public async Task<IEnumerable<StudentGetDTO>> ExecutePlacementAlgorithm()
         {
-            await _studentService.ExecuteGradeBasedPlacement();
+            var studyComponents = Enum.GetValues<StudyComponent>();
+
+            // TODO: check if it works
+            // TODO: fix to  place all at once
+            foreach (var studyComponent in studyComponents)
+            {
+                await _studentService.ExecuteGradeBasedPlacement(studyComponent);
+            }
 
             return await Get();
         }

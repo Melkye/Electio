@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { Student } from '../models/student.model';
+import { Course } from '../models/course.model';
+import { StudentPriorities } from '../models/student-priorities.model';
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +34,23 @@ export class StudentsService {
     return this.http.post<any[]>(`${this.apiUrl}/set-random-priorities`, {});
   }
 
+  submitStudentPriorities(id: string, priorities: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${id}/priorities`, priorities);
+  }
+
   executePlacement(): Observable<Student[]> {
     return this.http.post<Student[]>(`${this.apiUrl}/execute-placement`, {});
+  }
+
+  getStudentCourses(id: string): Observable<Course[]> {
+    return this.http.get<Course[]>(`${this.apiUrl}/${id}/placement`);
+  }
+
+  getStudentPriorities(id: string): Observable<StudentPriorities> {
+    return this.http.get<StudentPriorities>(`${this.apiUrl}/${id}/priorities`);
+  }
+
+  getAvailableCoursesGroups(id: string): Observable<Map<string, []>> {
+    return this.http.get<Map<string, []>>(`${this.apiUrl}/${id}/available-courses`);
   }
 }

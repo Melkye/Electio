@@ -164,7 +164,7 @@ public static class Generator
     }
 
     // TODO: factor out filtering by year and study component
-    private static List<StudyComponent> GetStudyComponentsAvailableToStudyYear(StudyYear studyYear) =>
+    public static List<StudyComponent> GetStudyComponentsAvailableToStudyYear(StudyYear studyYear) =>
         studyYear switch
         {
             StudyYear.First => [StudyComponent.SK1],

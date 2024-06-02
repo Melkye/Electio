@@ -16,7 +16,7 @@ export class CourseCardComponent {
   constructor(private http: HttpClient) {}
 
   loadStudents(): void {
-    this.http.get<Student[]>(`http://localhost:5207/api/courses/${this.course.id}/placement`).subscribe(
+    this.http.get<Student[]>(`http://localhost:5207/api/courses/placement/${this.course.id}`).subscribe(
       (students) => {
         this.students = students;
       },

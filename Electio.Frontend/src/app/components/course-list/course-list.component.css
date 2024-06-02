@@ -1,5 +1,23 @@
+/* course-list.component.css */
+.container {
+  margin: 20px;
+}
+
 .course-cards {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  gap: 20px;
+}
+
+mat-card {
+  width: 300px;
+}
+
+mat-card-title {
+  text-align: center;
+  width: 100%;
+}
+
+button {
+  margin-bottom: 20px;
 }
