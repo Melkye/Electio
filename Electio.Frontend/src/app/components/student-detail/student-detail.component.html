@@ -39,12 +39,11 @@
             <div *ngFor="let studyComponentGroup of availableCoursesByStudyComponent | keyvalue">
               <!-- Study component title -->
                 <h4>{{ studyComponentGroup.key }}</h4> 
-                <div *ngFor="let courseTitle of studyComponentGroup.value">
-                    <span>
-                        <a [routerLink]="['/courses', getCourseId(courseTitle)]">{{ courseTitle }}</a>
-                        <!-- <div>{{courseDescriptionPair.value}}</div> -->
-                      </span>
-                      <input type="number" [(ngModel)]="coursePrioritiesToSet[studyComponentGroup.key][courseTitle]" min="1">
+                <div *ngFor="let course of studyComponentGroup.value">
+                  <span>
+                    <a [routerLink]="['/courses', course.id]">{{ course.title }}</a>
+                    <input type="number" [(ngModel)]="coursePrioritiesToSet[studyComponentGroup.key][course.title]" min="1">
+                  </span>
                 </div>
             </div>
             <button mat-button color="primary" (click)="submitPriorities()">Submit Priorities</button>

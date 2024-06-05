@@ -240,7 +240,7 @@ public class StudentService
         //};
     }
 
-    public async Task<IDictionary<StudyComponent, List<string>>> GetAvailableCourses(Guid id)
+    public async Task<IDictionary<StudyComponent, List<CourseGetDTO>>> GetAvailableCourses(Guid id)
     {
         var studyYear = _unitOfWork.StudentRepository.GetByIdAsync(id).Result.StudyYear;
 
@@ -249,9 +249,9 @@ public class StudentService
         var courses = await _unitOfWork.CourseRepository.GetAllAsync();
 
         var availableCourses = courses
-            .GroupBy(c => c.StudyComponent, c => c.Title)
+            .GroupBy(c => c.StudyComponent, c => c)
             .Where(group => availableStudyComponents.Contains(group.Key))
-            .ToDictionary(group => group.Key, group => group.ToList());
+            .ToDictionary(group => group.Key, group => _mapper.Map<List<CourseGetDTO>>(group.ToList()));
 
         return availableCourses;
     }

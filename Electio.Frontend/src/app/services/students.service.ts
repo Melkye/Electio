@@ -50,7 +50,7 @@ export class StudentsService {
     return this.http.get<StudentPriorities>(`${this.apiUrl}/${id}/priorities`);
   }
 
-  getAvailableCoursesGroups(id: string): Observable<Map<string, []>> {
-    return this.http.get<Map<string, []>>(`${this.apiUrl}/${id}/available-courses`);
+  getAvailableCoursesGroups(id: string): Observable<Map<string, Course[]>> {
+    return this.http.get<Map<string, Course[]>>(`${this.apiUrl}/${id}/available-courses`);
   }
 }

@@ -64,7 +64,7 @@ namespace Electio.Api.Controllers
 
 
         [HttpGet("{id:guid}/available-courses")]
-        public async Task<IDictionary<StudyComponent, List<string>>> SetStudentPriorities(Guid id)
+        public async Task<IDictionary<StudyComponent, List<CourseGetDTO>>> SetStudentPriorities(Guid id)
         {
             return await _studentService.GetAvailableCourses(id);
         }

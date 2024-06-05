@@ -25,29 +25,37 @@ export class StudentDetailComponent implements OnInit {
     coursesPriorities: {}
   };
 
-  availableCoursesByStudyComponent: Map<string, string[]> = new Map<string, string[]>();
+  allCourses: Course[] = [];
+
+  availableCoursesByStudyComponent: Map<string, Course[]> = new Map<string, Course[]>();
 
   coursePrioritiesToSet: { [studyComponent: string]: { [courseTitle: string]: number } } = {};
 
   constructor(private studentsService: StudentsService,
     private coursesService: CoursesService, private route: ActivatedRoute)
   {
-    this.loadStudentCourses();
-    this.loadStudentPriorities();
-    // this.loadAvailableCoursesGroups();
+
   }
 
-  ngOnInit(): void {
+  ngOnInit(): void {  
     const id = this.route.snapshot.paramMap.get('id') ?? '';
+    this.loadStudent(id);
+
+    // this.loadAvailableCoursesGroups();
+    // this.initializeCoursePriorities();
+
+    this.loadStudentPriorities();
+
+    //this.loadCourses();
+    //this.loadStudentCourses();
+    
+  }
+
+  loadStudent(id: string): void {
     this.studentsService.getStudent(id).subscribe(data => {
       this.student = data;
-      this.loadAvailableCoursesGroups();
-    });
 
-    this.studentsService.getStudentCourses(id).subscribe(data => {
-      console.log('Student courses:');
-      console.log(data);
-      this.studentCourses = data; // Wrap data in an array
+      this.loadAvailableCoursesGroups();
     });
   }
 
@@ -61,12 +69,14 @@ export class StudentDetailComponent implements OnInit {
   }
 
   loadStudentPriorities(): void {
+    if(this.coursesService.isPlacementExecuted) {
     const id = this.route.snapshot.paramMap.get('id') ?? '';
     this.studentsService.getStudentPriorities(id).subscribe(data => {
       console.log('Student priorities:');
       console.log(data);
       this.studentPriorities = data;
     });
+  }
   }
   
   getCourseId(courseTitle: string): string {
@@ -116,17 +126,17 @@ export class StudentDetailComponent implements OnInit {
     return priority;
   }
 
-  setCoursePriorities(): void {
-    const availableCoursesGroups = this.studentsService.getAvailableCoursesGroups(this.student.id);
-    availableCoursesGroups.subscribe(groups => {
-      groups.forEach((value, studyComponent) => {
-        this.coursePrioritiesToSet[studyComponent] = {};
-        value.forEach(courseTitle => {
-          this.coursePrioritiesToSet[studyComponent][courseTitle] = 0; // Default priority
-        });
-      });
-    });
-  }
+  // setCoursePriorities(): void {
+  //   const availableCoursesGroups = this.studentsService.getAvailableCoursesGroups(this.student.id);
+  //   availableCoursesGroups.subscribe(groups => {
+  //     groups.forEach((value, studyComponent) => {
+  //       this.coursePrioritiesToSet[studyComponent] = {};
+  //       value.forEach(course => {
+  //         this.coursePrioritiesToSet[studyComponent][course.title] = 0; // Default priority
+  //       });
+  //     });
+  //   });
+  // }
 
   isStudentEnrolled(courseTitle: string): boolean {
     return this.studentCourses.some(course => course.title === courseTitle);
@@ -152,6 +162,25 @@ export class StudentDetailComponent implements OnInit {
       console.log('Available courses groups:');
       console.log(groups);
       this.availableCoursesByStudyComponent = groups;
+      this.initializeCoursePriorities();
     });
   }
+
+  loadCourses(): void {
+    this.coursesService.getCourses().subscribe(courses => {
+      this.allCourses = courses;
+    });
+  }
+
+  initializeCoursePriorities(): void {
+    for (const studyComponent in this.availableCoursesByStudyComponent) {
+      this.coursePrioritiesToSet[studyComponent] = {};
+      console.log('Study component:', studyComponent);
+      for (const course of this.availableCoursesByStudyComponent.get(studyComponent)!) {
+        console.log('Course:', course);
+        this.coursePrioritiesToSet[studyComponent][course.title] = 0; // Default priority
+      }
+    }
+  }
 }
+
