@@ -41,10 +41,20 @@ public class CourseRepository
         return updatedCourse.Entity;
     }
 
-    public async Task DeleteCourseAsync(Guid id)
+    public async Task DeleteAsync(Guid id)
     {
         var course = await _context.Courses.FirstOrDefaultAsync(c => c.Id == id);
         _context.Courses.Remove(course);
+        //await _context.SaveChangesAsync();
+    }
+
+    public async Task DeleteAsync()
+    {
+        var courses = await _context.Courses.ToListAsync();
+        _context.Courses.RemoveRange(courses);
+
+        var studentsOnCourses = await _context.StudentsOnCourses.ToListAsync();
+        _context.StudentsOnCourses.RemoveRange(studentsOnCourses);
         //await _context.SaveChangesAsync();
     }
 
@@ -99,5 +109,18 @@ public class CourseRepository
             .Where(c => c.Title == title)
             .Select(c => c.Id)
             .FirstOrDefaultAsync();
+    }
+
+    public double GetPlacementEfficiency()
+    {
+        var priorityGrade = _context.StudentsOnCourses
+            .Where(soc => soc.IsEnrolled)
+            .Join(_context.Students,
+            soc => soc.StudentId,
+            s => s.Id,
+            (soc, s) => new { soc.Priority, s.AverageGrade });
+
+        return priorityGrade.Sum(pg =>  pg.AverageGrade * pg.Priority)
+            / priorityGrade.Sum(pg => pg.AverageGrade); 
     }
 }

@@ -3,7 +3,6 @@ using Bogus.Distributions.Gaussian;
 using Electio.BusinessLogic.DTOs;
 using Electio.DataAccess.Entities;
 using Electio.DataAccess.Enums;
-using Microsoft.Identity.Client;
 
 // TODO: move Specialty and other enums to a separate Common project | maybe Generatior too
 namespace Electio.BusinessLogic;
@@ -12,7 +11,7 @@ public static class Generator
 {
     // TODO: consider counting how many courses to generate by counting who will enroll
     public static List<CourseCreateDTO> GenerateCoursesForStudyComponent(
-        int numberOfCourses = 3,
+        int numberOfCourses = 5,
         Faculty faculty = Faculty.FICE,
         List<Specialty> specialties = default,
         StudyComponent studyComponent = default,
@@ -31,8 +30,8 @@ public static class Generator
         var coursesFaker = new Faker<CourseCreateDTO>("uk")
             .Rules((f, c) =>
             {
-                c.Title = "Дисципліна" + f.Lorem.Word();
-                c.Quota = f.Random.Int(minQuota, maxQuota);
+                c.Title = "Дисципліна " + f.Music.Random.Word();
+                c.Quota = 18; // f.Random.Int(minQuota, maxQuota);
                 c.Specialties = specialties;
                 c.Faculty = faculty;
                 c.StudyComponent = studyComponent;
@@ -70,7 +69,7 @@ public static class Generator
     }
 
     public static List<StudentCreateDTO> GenerateStudentsForStudyYear(
-        int numberOfStudents = 100,
+        int numberOfStudents = 90,
         List<Specialty> specialties = default,
         Faculty faculty = Faculty.FICE,
         StudyYear studyYear = StudyYear.First,
@@ -106,7 +105,7 @@ public static class Generator
             .ToList()
             .Select(group => group.Sum(c => c.Quota));
 
-        if (studyComponentCapacities.Any(capacity => capacity < students.Count))
+        if (studyComponentCapacities.Any(capacity => capacity < students.Count/studyComponentCapacities.Count()))
         {
             // TODO: resolve issue with the number of students and quotas
             throw new ArgumentException("Number of students must be equal to the sum of quotas of all courses in a study component");
@@ -129,7 +128,7 @@ public static class Generator
             StudentName = student.Name,
         };
 
-        var studyComponentsAvailableToStudent = GetStudyComponentsAvailableToStudyYear(student.StudyYear);
+        var studyComponentsAvailableToStudent = Helper.GetStudyComponentsAvailableToStudyYear(student.StudyYear);
 
         var coursesAvailableToStudent = courses
             .Where(c => 
@@ -162,18 +161,4 @@ public static class Generator
 
         return studentPriorities;
     }
-
-    // TODO: factor out filtering by year and study component
-    public static List<StudyComponent> GetStudyComponentsAvailableToStudyYear(StudyYear studyYear) =>
-        studyYear switch
-        {
-            StudyYear.First => [StudyComponent.SK1],
-            StudyYear.Second => [
-                StudyComponent.SK2, StudyComponent.SK3, StudyComponent.SK4,
-                    StudyComponent.SK5, StudyComponent.SK6, StudyComponent.SK7, StudyComponent.SK8],
-            StudyYear.Third => [
-                StudyComponent.SK9, StudyComponent.SK10, StudyComponent.SK11,
-                    StudyComponent.SK12, StudyComponent.SK13, StudyComponent.SK14],
-            _ => throw new ArgumentException($"Student of {studyYear} doesn't elect courses")
-        };
 }

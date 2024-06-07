@@ -68,4 +68,14 @@ public class StudentRepository
             Students = enrollment.Select(e => e.Student)
         });
     }
+
+    public async Task DeleteAsync()
+    {
+        var students = await _context.Students.ToListAsync();
+        _context.Students.RemoveRange(students);
+
+        var studentsOnCourses = await _context.StudentsOnCourses.ToListAsync();
+        _context.StudentsOnCourses.RemoveRange(studentsOnCourses);
+        //await _context.SaveChangesAsync();
+    }
 }

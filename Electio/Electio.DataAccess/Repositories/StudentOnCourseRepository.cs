@@ -148,4 +148,11 @@ public class StudentOnCourseRepository
             soc.IsChecked = false;
         });
     }
+
+    public async Task DeleteAsync()
+    {
+        var studentsOnCourses = await _context.StudentsOnCourses.ToListAsync();
+        _context.StudentsOnCourses.RemoveRange(studentsOnCourses);
+        //await _context.SaveChangesAsync();
+    }
 }

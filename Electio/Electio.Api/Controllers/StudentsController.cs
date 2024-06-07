@@ -101,8 +101,8 @@ namespace Electio.Api.Controllers
         }
 
         // TODO: ActionResult?
-        [HttpPost("execute-placement")]
-        public async Task<IEnumerable<StudentGetDTO>> ExecutePlacementAlgorithm()
+        [HttpPost("execute-grade-biased-placement")]
+        public async Task<IEnumerable<StudentGetDTO>> ExecuteGradeBiasedPlacement()
         {
             var studyComponents = Enum.GetValues<StudyComponent>();
 
@@ -110,7 +110,23 @@ namespace Electio.Api.Controllers
             // TODO: fix to  place all at once
             foreach (var studyComponent in studyComponents)
             {
-                await _studentService.ExecuteGradeBasedPlacement(studyComponent);
+                await _studentService.ExecuteGradeBiasedPlacement(studyComponent);
+            }
+
+            return await Get();
+        }
+
+        // TODO: ActionResult?
+        [HttpPost("execute-time-biased-placement")]
+        public async Task<IEnumerable<StudentGetDTO>> ExecuteTimeBiasedPlacement()
+        {
+            var studyComponents = Enum.GetValues<StudyComponent>();
+
+            // TODO: check if it works
+            // TODO: fix to  place all at once
+            foreach (var studyComponent in studyComponents)
+            {
+                await _studentService.ExecuteTimeBiasedPlacement(studyComponent);
             }
 
             return await Get();
@@ -138,5 +154,13 @@ namespace Electio.Api.Controllers
 
         //    return NoContent();
         //}
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteAsync()
+        {
+            await _studentService.DeleteAsync();
+
+            return NoContent();
+        }
     }
 }

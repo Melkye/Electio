@@ -2,6 +2,7 @@
 using Electio.BusinessLogic.DTOs;
 using Electio.DataAccess;
 using Electio.DataAccess.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Electio.BusinessLogic.Services;
 public class CoursesService
@@ -65,10 +66,27 @@ public class CoursesService
         //return await GetStudentsPerCourseAsync();
     }
 
+    public async Task DeletePlacementsAsync()
+    {
+        await _unitOfWork.StudentOnCourseRepository.DeleteAsync();
+        await _unitOfWork.SaveChangesAsync();
+    }
+
     public async Task<Guid> GetCourseIdByTitleAsync(string title)
     {
         var courseId = await _unitOfWork.CourseRepository.GetCourseIdByTitleAsync(title);
 
         return courseId;
+    }
+
+    public double GetPlacementEfficiency()
+    {
+        return _unitOfWork.CourseRepository.GetPlacementEfficiency();
+    }
+
+    public async Task DeleteAsync()
+    {
+        await _unitOfWork.CourseRepository.DeleteAsync();
+        await _unitOfWork.SaveChangesAsync();
     }
 }

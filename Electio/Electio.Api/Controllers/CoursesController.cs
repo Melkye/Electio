@@ -72,6 +72,12 @@ public class CoursesController : ControllerBase
         //return await _coursesService.GetStudentsPerCourseAsync();
     }
 
+    [HttpGet("placement-status")]
+    public bool GetPlacementStatus()
+    {
+        return _coursesService.GetStudentsPerCourse().Any();
+    }
+
     //// PUT api/<CourseController>/5
     //[HttpPut("{id}")]
     //public void Put(int id, [FromBody] string value)
@@ -84,10 +90,31 @@ public class CoursesController : ControllerBase
     //{
     //}
 
-    // get id by title
     [HttpGet("get-id-by-title/{title}")]
     public async Task<Guid> GetIdByTitle(string title)
     {
         return await _coursesService.GetCourseIdByTitleAsync(title);
+    }
+
+    [HttpGet("placement-efficiency")]
+    public double GetPlacementEfficiency()
+    {
+        return _coursesService.GetPlacementEfficiency();
+    }
+
+    [HttpDelete]
+    public async Task<IActionResult> DeleteAsync()
+    {
+        await _coursesService.DeleteAsync();
+
+        return NoContent();
+    }
+
+    [HttpDelete("placement")]
+    public async Task<IActionResult> DeletePlacementsAsync()
+    {
+        await _coursesService.DeletePlacementsAsync();
+
+        return NoContent();
     }
 }
