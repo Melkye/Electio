@@ -3,9 +3,9 @@
     <h2>Courses</h2>
 
     <button mat-raised-button 
-          [color]="isPlacementExecuted() ? 'accent' : 'primary'" 
+          [color]="isPlacementExecuted ? 'accent' : 'primary'" 
           (click)="runPlacementAlgorithm()">
-    {{ isPlacementExecuted() ? 'Знову розподілити студентство' : 'Розподілити студентство' }}
+    {{ isPlacementExecuted ? 'Знову розподілити студентство' : 'Розподілити студентство' }}
   </button>
 
     <div class="course-cards">

@@ -16,7 +16,7 @@
                 <span><a [routerLink]="['/courses', course.id]">{{ course.title }}</a></span>
                 <span> Priority: {{ getCoursePriority(course.id) }}</span>
             </div> -->
-          <div *ngIf="isPlacementExecuted()">
+          <div *ngIf="isPlacementExecuted">
             <h3>Enrolled Courses:</h3>
             <div *ngFor="let studyComponentGroup of studentPriorities.coursesPriorities | keyvalue">
               <!-- Study component title -->
@@ -35,7 +35,7 @@
           
 
           <div>abubaabubaabubaabubaabubaabubaabubaabubaabubaabubaabubaabubaabubaabubaabubaabubaabubaabubaabubaabuba</div>
-          <div *ngIf="!isPlacementExecuted()">
+          <div *ngIf="!isPlacementExecuted">
             <div *ngFor="let studyComponentGroup of availableCoursesByStudyComponent | keyvalue">
               <!-- Study component title -->
                 <h4>{{ studyComponentGroup.key }}</h4>

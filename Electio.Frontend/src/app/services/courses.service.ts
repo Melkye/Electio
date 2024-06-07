@@ -72,9 +72,7 @@ export class CoursesService {
     return this.http.get<string>(`${this.apiUrl}/get-id-by-title/${courseTitle}`);
   }
   
-  isPlacementExecuted(): Observable<boolean> {
-    return defer(() => this.http.get<boolean>(`${this.apiUrl}/placement-status`)).pipe(
-      shareReplay(1) // Share the same result among all subscribers
-    );
+  setIsPlacementExecuted(): Observable<boolean> {
+    return this.http.get<boolean>(`${this.apiUrl}/placement-status`);
   }
 }

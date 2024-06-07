@@ -25,6 +25,7 @@ export class StudentDetailComponent implements OnInit {
     studentName: '',
     coursesPriorities: {}
   };
+  isPlacementExecuted = false;
 
   allCourses: Course[] = [];
 
@@ -40,13 +41,30 @@ export class StudentDetailComponent implements OnInit {
 
   ngOnInit(): void {  
     const id = this.route.snapshot.paramMap.get('id') ?? '';
-    this.loadStudent(id);
+
 
     // this.loadAvailableCoursesGroups();
     // this.initializeCoursePriorities();
 
-    this.loadStudentPriorities();
 
+
+    this.loadStudent(id);
+    
+    this.coursesService.setIsPlacementExecuted().subscribe(isExecuted => {
+      this.isPlacementExecuted = isExecuted;
+
+      if (this.isPlacementExecuted) {
+        console.log('Placement has been executed');
+        this.loadStudentPriorities();
+        this.loadStudentCourses();
+      }
+      else
+        this.initializeCoursePriorities();
+    });
+
+
+    
+    //this.loadStudentPriorities();
     //this.loadCourses();
     //this.loadStudentCourses();
     
@@ -56,7 +74,8 @@ export class StudentDetailComponent implements OnInit {
     this.studentsService.getStudent(id).subscribe(data => {
       this.student = data;
 
-      this.loadAvailableCoursesGroups();
+      this.loadAvailableCoursesPerStudyComponent();
+
     });
   }
 
@@ -71,17 +90,19 @@ export class StudentDetailComponent implements OnInit {
 
   loadStudentPriorities(): void {
     const id = this.route.snapshot.paramMap.get('id') ?? '';
-
     // TODO: check if it's called only once as expected
-    this.coursesService.isPlacementExecuted().subscribe(isExecuted => {
-      if (isExecuted) {
+
+      
       this.studentsService.getStudentPriorities(id).subscribe(data => {
-        console.log('Student priorities:');
-        console.log(data);
-        this.studentPriorities = data;
+        if (this.isPlacementExecuted) {
+          console.log('Student priorities:');
+          console.log(data);
+          this.studentPriorities = data;
+        }
+        else {
+          console.log('Student priorities not loaded because placement has not been executed yet');
+        }
       });
-      }
-    });
   }
   
   getCourseId(courseTitle: string): string {
@@ -147,17 +168,6 @@ export class StudentDetailComponent implements OnInit {
     return this.studentCourses.some(course => course.title === courseTitle);
   }
 
-  isPlacementExecuted(): boolean {
-    console.log('Check isPlacementExecuted:');
-    
-    this.coursesService.isPlacementExecuted().subscribe(isExecuted => {
-      console.log('Is placement executed:', isExecuted);
-      return isExecuted;
-    });
-
-    return false;
-  }
-
   submitPriorities(): void {
     const studentPriorities = {
       studentName: this.student.name,
@@ -169,12 +179,11 @@ export class StudentDetailComponent implements OnInit {
     });
   }
 
-  loadAvailableCoursesGroups(): void {
-    this.studentsService.getAvailableCoursesGroups(this.student.id).subscribe(CoursesByStudyComponent => {
-      console.log('Available courses by study coponent:');
-      console.log(CoursesByStudyComponent);
-      this.availableCoursesByStudyComponent = CoursesByStudyComponent;
-      this.initializeCoursePriorities();
+  loadAvailableCoursesPerStudyComponent(): void {
+    this.studentsService.getAvailableCoursesPerStudyComponent(this.student.id).subscribe(coursesByStudyComponent => {
+      console.log('Available courses by study component:');
+      console.log(coursesByStudyComponent);
+      this.availableCoursesByStudyComponent = coursesByStudyComponent;
     });
   }
 
@@ -187,9 +196,9 @@ export class StudentDetailComponent implements OnInit {
   initializeCoursePriorities(): void {
     for (const studyComponent in this.availableCoursesByStudyComponent) {
       this.coursePrioritiesToSet[studyComponent] = {};
-      console.log('Study component:', studyComponent);
-      for (const course of this.availableCoursesByStudyComponent[studyComponent]!) {
-        console.log('Course:', course);
+      const courses = this.availableCoursesByStudyComponent[studyComponent];
+      for (const course of courses) {
+        console.log('Study component:', studyComponent, 'Course:', course, "Priority: 0");
         this.coursePrioritiesToSet[studyComponent][course.title] = 0; // Default priority
       }
     }

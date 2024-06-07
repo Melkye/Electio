@@ -13,11 +13,17 @@ import { concatMap } from 'rxjs';
 export class CourseListComponent implements OnInit {
   courses: Course[] = [];
   courseEnrollments: CourseEnrollment[] = [];
+  isPlacementExecuted = false;
 
   constructor(private coursesService: CoursesService) {}
   ngOnInit(): void {
     this.loadCourses();
     this.loadCourseEnrollments();
+    
+    this.coursesService.setIsPlacementExecuted().subscribe(isExecuted => {
+      this.isPlacementExecuted = isExecuted;
+    });
+
   }
 
   // TODO: check if it works as Promise and not as Observable
@@ -47,13 +53,5 @@ export class CourseListComponent implements OnInit {
       console.log('Placement algorithm executed');
       //this.isPlacementExecuted = true;  // Set a flag to indicate that the placement has been executed
     });
-  }
-  
-  isPlacementExecuted(): boolean {
-    this.coursesService.isPlacementExecuted().subscribe(isExecuted => {
-      return isExecuted;
-  });
-    // TODO: check if this default return value does not break the logic
-  return false;
   }
 }
