@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, defer, map, shareReplay } from 'rxjs';
 import { Student } from '../models/student.model';
 import { Course } from '../models/course.model';
 
@@ -20,8 +20,12 @@ import { Course } from '../models/course.model';
 export class CoursesService {
   private apiUrl = 'http://localhost:5207/api/Courses';
 
-  // TODO: make endpoint on back anr tetrieve the result via function
-  public isPlacementExecuted: boolean = false;
+  // // TODO: make endpoint on back anr tetrieve the result via function
+  // public isPlacementExecuted(): boolean { 
+  //   return this.getAllCoursesPlacement().subscribe(enrollments => {
+  //     return enrollments.length > 0;
+  //   });
+  // }
 
   constructor(private http: HttpClient) {}
 
@@ -56,16 +60,21 @@ export class CoursesService {
   }
 
   unenrollEveryone(): Observable<void> {
-    this.isPlacementExecuted = false;
     return this.http.get<void>(`${this.apiUrl}/unenroll-everyone`, {});
   }
 
   executePlacement(): Observable<void> {
-    this.isPlacementExecuted = true;
     return this.http.post<void>(`${this.apiUrl.replace('Courses', 'Students')}/execute-placement`, {});
   }
 
+
   getCourseId(courseTitle: string): Observable<string> {
     return this.http.get<string>(`${this.apiUrl}/get-id-by-title/${courseTitle}`);
+  }
+  
+  isPlacementExecuted(): Observable<boolean> {
+    return defer(() => this.http.get<boolean>(`${this.apiUrl}/placement-status`)).pipe(
+      shareReplay(1) // Share the same result among all subscribers
+    );
   }
 }

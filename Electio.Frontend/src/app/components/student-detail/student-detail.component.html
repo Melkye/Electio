@@ -35,19 +35,27 @@
           
 
           <div>abubaabubaabubaabubaabubaabubaabubaabubaabubaabubaabubaabubaabubaabubaabubaabubaabubaabubaabubaabuba</div>
-          <!-- <div *ngIf="!isPlacementExecuted()"> -->
+          <div *ngIf="!isPlacementExecuted()">
             <div *ngFor="let studyComponentGroup of availableCoursesByStudyComponent | keyvalue">
               <!-- Study component title -->
-                <h4>{{ studyComponentGroup.key }}</h4> 
+                <h4>{{ studyComponentGroup.key }}</h4>
                 <div *ngFor="let course of studyComponentGroup.value">
                   <span>
                     <a [routerLink]="['/courses', course.id]">{{ course.title }}</a>
-                    <input type="number" [(ngModel)]="coursePrioritiesToSet[studyComponentGroup.key][course.title]" min="1">
+                    <mat-form-field appearance="fill">
+                      <mat-label>Set priority</mat-label>
+                      <mat-select [(ngModel)]="coursePrioritiesToSet[studyComponentGroup.key][course.title]" required>
+                        <!-- TODO: make options to contain only items that weren't selected yet (in other words, priorities must be unique) -->
+                        <mat-option *ngFor="let priority of generatePriorityOptions(studyComponentGroup.value.length)" [value]="priority">
+                          {{ priority }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
                   </span>
                 </div>
-            </div>
+              </div>
             <button mat-button color="primary" (click)="submitPriorities()">Submit Priorities</button>
-          <!-- </div> -->
+          </div>
     </mat-card-content>
   </mat-card>
   

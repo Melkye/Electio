@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { Course } from '../../models/course.model';
 import { CourseEnrollment } from '../../models/course-enrollment.model';
 import { CoursesService } from '../../services/courses.service';
+import { concatMap } from 'rxjs';
 
 @Component({
   selector: 'app-course-list',
@@ -37,13 +38,22 @@ export class CourseListComponent implements OnInit {
   }
 
   runPlacementAlgorithm(): void {
-    this.coursesService.unenrollEveryone();
-    this.coursesService.executePlacement().subscribe(() => {
+    this.coursesService.unenrollEveryone().pipe(
+      concatMap(() => {
+        console.log('Everyone unenrolled');
+        return this.coursesService.executePlacement();
+      })
+    ).subscribe(() => {
       console.log('Placement algorithm executed');
+      //this.isPlacementExecuted = true;  // Set a flag to indicate that the placement has been executed
     });
   }
   
   isPlacementExecuted(): boolean {
-    return this.coursesService.isPlacementExecuted;
+    this.coursesService.isPlacementExecuted().subscribe(isExecuted => {
+      return isExecuted;
+  });
+    // TODO: check if this default return value does not break the logic
+  return false;
   }
 }

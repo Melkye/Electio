@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { Student } from '../models/student.model';
-import { Course } from '../models/course.model';
+import { AvailableCoursesResponse, Course } from '../models/course.model';
 import { StudentPriorities } from '../models/student-priorities.model';
 
 @Injectable({
@@ -50,7 +50,7 @@ export class StudentsService {
     return this.http.get<StudentPriorities>(`${this.apiUrl}/${id}/priorities`);
   }
 
-  getAvailableCoursesGroups(id: string): Observable<Map<string, Course[]>> {
-    return this.http.get<Map<string, Course[]>>(`${this.apiUrl}/${id}/available-courses`);
+  getAvailableCoursesGroups(id: string): Observable<AvailableCoursesResponse> {
+    return this.http.get<AvailableCoursesResponse>(`${this.apiUrl}/${id}/available-courses`);
   }
 }

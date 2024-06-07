@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { StudentsService } from '../../services/students.service';
 import { Student } from '../../models/student.model';
 import { Course } from '../../models/course.model';
+import { AvailableCoursesResponse } from '../../models/course.model';
 import { StudentPriorities } from '../../models/student-priorities.model';
 import { CoursesService } from '../../services/courses.service';
 
@@ -27,7 +28,7 @@ export class StudentDetailComponent implements OnInit {
 
   allCourses: Course[] = [];
 
-  availableCoursesByStudyComponent: Map<string, Course[]> = new Map<string, Course[]>();
+  availableCoursesByStudyComponent: AvailableCoursesResponse = {};
 
   coursePrioritiesToSet: { [studyComponent: string]: { [courseTitle: string]: number } } = {};
 
@@ -69,14 +70,18 @@ export class StudentDetailComponent implements OnInit {
   }
 
   loadStudentPriorities(): void {
-    if(this.coursesService.isPlacementExecuted) {
     const id = this.route.snapshot.paramMap.get('id') ?? '';
-    this.studentsService.getStudentPriorities(id).subscribe(data => {
-      console.log('Student priorities:');
-      console.log(data);
-      this.studentPriorities = data;
+
+    // TODO: check if it's called only once as expected
+    this.coursesService.isPlacementExecuted().subscribe(isExecuted => {
+      if (isExecuted) {
+      this.studentsService.getStudentPriorities(id).subscribe(data => {
+        console.log('Student priorities:');
+        console.log(data);
+        this.studentPriorities = data;
+      });
+      }
     });
-  }
   }
   
   getCourseId(courseTitle: string): string {
@@ -143,7 +148,14 @@ export class StudentDetailComponent implements OnInit {
   }
 
   isPlacementExecuted(): boolean {
-    return this.coursesService.isPlacementExecuted;
+    console.log('Check isPlacementExecuted:');
+    
+    this.coursesService.isPlacementExecuted().subscribe(isExecuted => {
+      console.log('Is placement executed:', isExecuted);
+      return isExecuted;
+    });
+
+    return false;
   }
 
   submitPriorities(): void {
@@ -158,10 +170,10 @@ export class StudentDetailComponent implements OnInit {
   }
 
   loadAvailableCoursesGroups(): void {
-    this.studentsService.getAvailableCoursesGroups(this.student.id).subscribe(groups => {
-      console.log('Available courses groups:');
-      console.log(groups);
-      this.availableCoursesByStudyComponent = groups;
+    this.studentsService.getAvailableCoursesGroups(this.student.id).subscribe(CoursesByStudyComponent => {
+      console.log('Available courses by study coponent:');
+      console.log(CoursesByStudyComponent);
+      this.availableCoursesByStudyComponent = CoursesByStudyComponent;
       this.initializeCoursePriorities();
     });
   }
@@ -176,11 +188,15 @@ export class StudentDetailComponent implements OnInit {
     for (const studyComponent in this.availableCoursesByStudyComponent) {
       this.coursePrioritiesToSet[studyComponent] = {};
       console.log('Study component:', studyComponent);
-      for (const course of this.availableCoursesByStudyComponent.get(studyComponent)!) {
+      for (const course of this.availableCoursesByStudyComponent[studyComponent]!) {
         console.log('Course:', course);
         this.coursePrioritiesToSet[studyComponent][course.title] = 0; // Default priority
       }
     }
+  }
+
+  generatePriorityOptions(numOptions: number): number[] {
+    return Array.from({ length: numOptions }, (_, index) => index + 1);
   }
 }
 

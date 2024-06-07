@@ -7,3 +7,6 @@ export interface Course {
     studyComponent: string;
   }
   
+ export interface AvailableCoursesResponse {
+    [studyComponent: string]: Course[];
+  }
