@@ -11,29 +11,34 @@ import { concatMap } from 'rxjs';
   styleUrls: ['./course-list.component.css']
 })
 export class CourseListComponent implements OnInit {
+[x: string]: any;
   courses: Course[] = [];
   courseEnrollments: CourseEnrollment[] = [];
   isPlacementExecuted = false;
+  usedAlgorithm = "";
+  placementEfficiency = 0;
 
   constructor(private coursesService: CoursesService) {}
+  
   ngOnInit(): void {
     this.loadCourses();
-    this.loadCourseEnrollments();
+    this.loadCoursePlacements();
     
     this.coursesService.setIsPlacementExecuted().subscribe(isExecuted => {
+      console.log('Placement status received');
       this.isPlacementExecuted = isExecuted;
     });
 
+    this.loadPlacementEfficiency();
   }
 
-  // TODO: check if it works as Promise and not as Observable
   loadCourses(): void {
     this.coursesService.getCourses().subscribe(courses => {
       this.courses = courses;
     });
   }
 
-  loadCourseEnrollments(): void {
+  loadCoursePlacements(): void {
     this.coursesService.getAllCoursesPlacement().subscribe(enrollments => {
       this.courseEnrollments = enrollments;
     });
@@ -43,15 +48,43 @@ export class CourseListComponent implements OnInit {
     return this.courseEnrollments.find(enrollment => enrollment.title === course.title);
   }
 
-  runPlacementAlgorithm(): void {
+  unenrollEveryone(): void {
+    this.coursesService.unenrollEveryone().subscribe(() => {
+      console.log('Everyone unenrolled');
+      this.ngOnInit()
+    });
+  }
+
+  runGBPAlgorithm(): void {
     this.coursesService.unenrollEveryone().pipe(
       concatMap(() => {
         console.log('Everyone unenrolled');
-        return this.coursesService.executePlacement();
+        this.usedAlgorithm = 'GBP';
+        return this.coursesService.executeGradeBiasedPlacement();
       })
     ).subscribe(() => {
-      console.log('Placement algorithm executed');
-      //this.isPlacementExecuted = true;  // Set a flag to indicate that the placement has been executed
+      console.log('GBP algorithm executed');
+      this.ngOnInit()
+    });
+  }
+
+  runATBPAlgorithm(): void {
+    this.coursesService.unenrollEveryone().pipe(
+      concatMap(() => {
+        console.log('Everyone unenrolled');
+        this.usedAlgorithm = 'ATBP';
+        return this.coursesService.executeAccessTimeBiasedPlacement();
+      })
+    ).subscribe(() => {
+      console.log('ATBP algorithm executed');
+      
+      this.ngOnInit()
+    });
+  }
+
+  loadPlacementEfficiency(): void {
+    this.coursesService.getPlacementEficiency().subscribe(efficiency => {
+      this.placementEfficiency = Number(efficiency);
     });
   }
 }

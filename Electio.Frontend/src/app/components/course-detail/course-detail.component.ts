@@ -16,8 +16,7 @@ export class CourseDetailComponent implements OnInit {
 
   constructor(private coursesService: CoursesService, private route: ActivatedRoute) {}
 
-
-  
+ 
   // Due to API returns not course but placement -- array of students,
   // THe logic here deviates from the 'normal' flow
   ngOnInit(): void {

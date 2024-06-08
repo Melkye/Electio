@@ -1,18 +1,38 @@
 <!-- course-list.component.html -->
 <div class="container">
-    <h2>Courses</h2>
+    <h2>Дисципліни</h2>
 
-    <button mat-raised-button 
-          [color]="isPlacementExecuted ? 'accent' : 'primary'" 
-          (click)="runPlacementAlgorithm()">
-    {{ isPlacementExecuted ? 'Знову розподілити студентство' : 'Розподілити студентство' }}
-  </button>
+    <div *ngIf="isPlacementExecuted">
+      <button mat-raised-button 
+      color='warn'
+      (click)="unenrollEveryone()">
+      Скасувати розподіл
+      </button>
+      <span>
+        Efficiency by {{ usedAlgorithm }}: {{ placementEfficiency | number:'1.2-2' }}
+      </span>
+    </div>
+
+    <div *ngIf="!isPlacementExecuted">
+      <button mat-raised-button 
+      color='primary'
+      (click)="runGBPAlgorithm()">
+      Розподілити алгогритмом GBP
+      </button>
+
+      <button mat-raised-button 
+      color='warn'
+      (click)="runATBPAlgorithm()">
+      Розподілити алгогритмом ATBP
+      </button>
+    </div>
 
     <div class="course-cards">
       <mat-card *ngFor="let course of courses">
         <mat-card-header>
           <mat-card-title center>{{ course.title }}</mat-card-title>
-          <!-- <mat-card-subtitle>{{ course. }}</mat-card-subtitle> -->
+          <!-- <mat-card-subtitle>{{ course.description }}</mat-card-subtitle> -->
+          <mat-card-subtitle>{{ course.quota }}</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
           <!-- <p>{{ course.description }}</p> -->

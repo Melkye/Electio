@@ -63,10 +63,13 @@ export class CoursesService {
     return this.http.get<void>(`${this.apiUrl}/unenroll-everyone`, {});
   }
 
-  executePlacement(): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl.replace('Courses', 'Students')}/execute-placement`, {});
+  executeAccessTimeBiasedPlacement(): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl.replace('Courses', 'Students')}/execute-time-biased-placement`, {});
   }
 
+  executeGradeBiasedPlacement(): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl.replace('Courses', 'Students')}/execute-grade-biased-placement`, {});
+  }
 
   getCourseId(courseTitle: string): Observable<string> {
     return this.http.get<string>(`${this.apiUrl}/get-id-by-title/${courseTitle}`);
@@ -74,5 +77,9 @@ export class CoursesService {
   
   setIsPlacementExecuted(): Observable<boolean> {
     return this.http.get<boolean>(`${this.apiUrl}/placement-status`);
+  }
+
+  getPlacementEficiency(): Observable<string> {
+    return this.http.get<string>(`${this.apiUrl}/placement-efficiency`);
   }
 }
