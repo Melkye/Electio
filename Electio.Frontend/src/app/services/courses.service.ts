@@ -33,6 +33,9 @@ export class CoursesService {
     return this.http.get<Course[]>(this.apiUrl);
   }
 
+  getCourse(id: string): Observable<Course> {
+    return this.http.get<Course>(`${this.apiUrl}/${id}`);
+  }
   // async getCourses(): Promise<Course[]> {
   //   return this.http.get<Course[]>(this.apiUrl).toPromise() as Promise<Course[]>;
   // }
@@ -47,7 +50,7 @@ export class CoursesService {
     return this.http.get<any>(`${this.apiUrl}/placement/${id}`);
   }
 
-  addCourse(course: string): Observable<void> {
+  addCourse(course: Course): Observable<void> {
     return this.http.post<void>(this.apiUrl, course);
   }
 

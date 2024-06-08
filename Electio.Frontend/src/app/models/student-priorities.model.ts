@@ -4,7 +4,7 @@ export interface StudentPriorities {
 }
 
 export interface CoursesPriorities {
-    [key: string]: {
-        [key: string]: number;
+    [studyComponent: string]: {
+        [course: string]: number;
     };
 }

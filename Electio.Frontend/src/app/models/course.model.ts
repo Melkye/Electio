@@ -4,7 +4,7 @@ export interface Course {
     quota: number;
     faculty: number; //string;
     specialties: number[]; //string[];
-    studyComponent: string;
+    studyComponent: number //string;
   }
   
  export interface AvailableCoursesResponse {

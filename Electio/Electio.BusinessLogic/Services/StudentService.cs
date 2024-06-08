@@ -148,7 +148,7 @@ public class StudentService
 
             //var course = placement.First(course => course.Title == highestPriorityCourseId);
             var countOfStudentsEnrolledOnCourse = (await _unitOfWork.StudentOnCourseRepository.GetStudentsByCourseIdAsync(highestPriorityNotCheckedCourseId)).Count();
-            var courseQuota = (await _unitOfWork.CourseRepository.GetCourseByIdAsync(highestPriorityNotCheckedCourseId)).Quota;
+            var courseQuota = (await _unitOfWork.CourseRepository.GetByIdAsync(highestPriorityNotCheckedCourseId)).Quota;
 
             if (countOfStudentsEnrolledOnCourse < courseQuota)
             {
@@ -230,7 +230,7 @@ public class StudentService
 
             //var course = placement.First(course => course.Title == highestPriorityCourseId);
             var countOfStudentsEnrolledOnCourse = (await _unitOfWork.StudentOnCourseRepository.GetStudentsByCourseIdAsync(highestPriorityNotCheckedCourseId)).Count();
-            var courseQuota = (await _unitOfWork.CourseRepository.GetCourseByIdAsync(highestPriorityNotCheckedCourseId)).Quota;
+            var courseQuota = (await _unitOfWork.CourseRepository.GetByIdAsync(highestPriorityNotCheckedCourseId)).Quota;
 
             if (countOfStudentsEnrolledOnCourse < courseQuota)
             {

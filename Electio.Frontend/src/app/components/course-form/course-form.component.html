@@ -1,0 +1,46 @@
+<h2 mat-dialog-title>{{ data.course ? 'Edit Course' : 'Add Course' }}</h2>
+<mat-dialog-content>
+  <form [formGroup]="courseForm">
+    <mat-form-field appearance="fill">
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="title" required>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Quota</mat-label>
+      <input matInput type="number" formControlName="quota" required>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Faculty</mat-label>
+      <input matInput type="number" formControlName="faculty" required>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Specialties</mat-label>
+      <!-- TODO: Add proper specialties choice -->
+      <!-- <mat-select formControlName="specialties" multiple>
+        <mat-option *ngFor="let specialty of availableSpecialties" [value]="specialty.id">{{ specialty.name }}</mat-option>
+      </mat-select> -->
+      <mat-select formControlName="specialties" multiple>
+        <mat-option [value]="121">121</mat-option>
+        <mat-option [value]="123">123</mat-option>
+        <mat-option [value]="126">126</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>StudyComponent</mat-label>
+      <mat-select formControlName="studyComponent">
+        <mat-option [value]="1">SK1</mat-option>
+        <mat-option [value]="2">SK2</mat-option>
+        <mat-option [value]="3">SK3</mat-option>
+        <mat-option [value]="4">SK4</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-button (click)="onSave()" [disabled]="courseForm.invalid">Save</button>
+</mat-dialog-actions>

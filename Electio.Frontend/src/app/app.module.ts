@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTableModule } from '@angular/material/table';
 import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -16,6 +17,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
+import { MatDialogModule } from '@angular/material/dialog';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -25,6 +27,8 @@ import { StudentListComponent } from './components/student-list/student-list.com
 import { StudentDetailComponent } from './components/student-detail/student-detail.component';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
+import { LoadingDialogComponent } from './components/loading-dialog/loading-dialog.component';
+import { CourseFormComponent } from './components/course-form/course-form.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +38,9 @@ import { FooterComponent } from './components/footer/footer.component';
     StudentListComponent,
     StudentDetailComponent,
     HeaderComponent,
-    FooterComponent
+    FooterComponent, 
+    LoadingDialogComponent,
+    CourseFormComponent
   ],
   imports: [
     BrowserModule,
@@ -48,6 +54,7 @@ import { FooterComponent } from './components/footer/footer.component';
     MatFormFieldModule,
     MatTableModule,
     FormsModule,
+    ReactiveFormsModule,
     MatPaginator,
     MatInputModule,
     MatSelectModule,
@@ -55,6 +62,7 @@ import { FooterComponent } from './components/footer/footer.component';
     MatCardModule,
     MatIconModule,
     MatListModule,
+    MatDialogModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

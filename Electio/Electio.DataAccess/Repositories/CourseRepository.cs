@@ -16,13 +16,13 @@ public class CourseRepository
         return await _context.Courses.ToListAsync();
     }
 
-    public async Task<Course> GetCourseByIdAsync(Guid id)
+    public async Task<Course> GetByIdAsync(Guid id)
     {
         var course = await _context.Courses.FirstOrDefaultAsync(c => c.Id == id);
         return course;
     }
 
-    public async Task<Course> CreateCourseAsync(Course course)
+    public async Task<Course> CreateAsync(Course course)
     {
         var createdCourse = await _context.Courses.AddAsync(course);
         //await _context.SaveChangesAsync();
@@ -82,25 +82,26 @@ public class CourseRepository
 
     public CourseEnrollment GetStudentsPerCourse(Guid courseId)
     {
-        var enrollment = _context.StudentsOnCourses
-            .Where(soc => soc.CourseId == courseId)
-            .Where(soc => soc.IsEnrolled == true)
-            .Join(_context.Students,
-                soc => soc.StudentId,
-                s => s.Id,
-                (soc, s) => new { soc.CourseId, Student = s })
-            .Join(_context.Courses,
-                courseStudentPair => courseStudentPair.CourseId,
-                course => course.Id,
-                (courseStudentPair, course) => new { course.Title, course.Quota, courseStudentPair.Student })
-            .GroupBy(courseStudentPair => new { courseStudentPair.Title, courseStudentPair.Quota });
+        var studentIdsEnrolledOnSpecificCourse = 
+            _context.StudentsOnCourses
+                .Where(soc => soc.CourseId == courseId)
+                .Where(soc => soc.IsEnrolled == true);
 
-        return enrollment.Select(enrollment => new CourseEnrollment
+        var studentsEnrolledOnSpecificCourse=
+            studentIdsEnrolledOnSpecificCourse
+                .Join(_context.Students,
+                    soc => soc.StudentId,
+                    s => s.Id,
+                    (soc, s) => s);
+
+        var course = _context.Courses.FirstOrDefault(c => c.Id == courseId);
+
+        return new CourseEnrollment
         {
-            Title = enrollment.Key.Title,
-            Quota = enrollment.Key.Quota,
-            Students = enrollment.Select(e => e.Student)
-        }).Single();
+            Title = course!.Title,
+            Quota = course!.Quota,
+            Students = [.. studentsEnrolledOnSpecificCourse]
+        };
     }
 
     public async Task<Guid> GetCourseIdByTitleAsync(string title)

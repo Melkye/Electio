@@ -9,7 +9,7 @@
       Скасувати розподіл
       </button>
       <span>
-        Efficiency by {{ usedAlgorithm }}: {{ placementEfficiency | number:'1.2-2' }}
+        Efficiency: {{ placementEfficiency | number:'1.2-2' }}
       </span>
     </div>
 
@@ -25,12 +25,20 @@
       (click)="runATBPAlgorithm()">
       Розподілити алгогритмом ATBP
       </button>
+
+      <button mat-raised-button
+      color="primary"
+      (click)="addCourse()">
+      Add Course
+    </button>
+    
     </div>
 
     <div class="course-cards">
       <mat-card *ngFor="let course of courses">
+        <button mat-raised-button color="accent" (click)="editCourse(course)">Edit</button>
         <mat-card-header>
-          <mat-card-title center>{{ course.title }}</mat-card-title>
+          <mat-card-title center><a [routerLink]="['/courses', course.id]">{{ course.title }}</a></mat-card-title>
           <!-- <mat-card-subtitle>{{ course.description }}</mat-card-subtitle> -->
           <mat-card-subtitle>{{ course.quota }}</mat-card-subtitle>
         </mat-card-header>

@@ -42,13 +42,14 @@
                     <a [routerLink]="['/courses', course.id]">{{ course.title }}</a>
                     <mat-form-field appearance="fill">
                       <mat-label>Set priority</mat-label>
-                      <mat-select [(ngModel)]="coursePrioritiesToSet[studyComponentGroup.key][course.title]" required>
+                      <mat-select [(ngModel)]="studentPriorities.coursesPriorities[studyComponentGroup.key][course.title]" required>
                         <!-- TODO: make options to contain only items that weren't selected yet (in other words, priorities must be unique) -->
                         <mat-option *ngFor="let priority of generatePriorityOptions(studyComponentGroup.value.length)" [value]="priority">
                           {{ priority }}
                         </mat-option>
                       </mat-select>
                     </mat-form-field>
+                    
                   </span>
                 </div>
               </div>

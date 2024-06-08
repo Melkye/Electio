@@ -58,7 +58,7 @@ export class StudentDetailComponent implements OnInit {
       }
       else {
         console.log("Placement hasn't been executed. Setting student priorities and courses.");
-        this.initializeCoursePriorities();
+        this.loadStudentPriorities()
       }
     });
     
@@ -95,14 +95,14 @@ export class StudentDetailComponent implements OnInit {
           console.log('Student priorities:');
           console.log(data);
 
-          if (Object.keys(this.studentPriorities.coursesPriorities).length === 0) {
+          if (Object.keys(data.coursesPriorities).length === 0) {
             
-            console.log('Student priorities already set, loading them.');
-            this.studentPriorities = data;
-          }
-          else {
             console.log('Student priorities not set. Setting them to zeros.');
             this.initializeCoursePriorities();
+          }
+          else {
+            console.log('Student priorities already set, loading them.');
+            this.studentPriorities = data;
           }
       });
   }
@@ -129,12 +129,12 @@ export class StudentDetailComponent implements OnInit {
   }
 
   submitPriorities(): void {
-    const studentPriorities = {
-      studentName: this.student.name,
-      coursesPriorities: this.coursePrioritiesToSet
-    };
+    // const studentPriorities = {
+    //   studentName: this.student.name,
+    //   coursesPriorities: this.coursePrioritiesToSet
+    // };
 
-    this.studentsService.submitStudentPriorities(this.student.id, studentPriorities).subscribe(response => {
+    this.studentsService.submitStudentPriorities(this.student.id, this.studentPriorities).subscribe(response => {
       console.log('Priorities submitted successfully', response);
     });
   }
@@ -155,11 +155,12 @@ export class StudentDetailComponent implements OnInit {
 
   initializeCoursePriorities(): void {
     for (const studyComponent in this.availableCoursesByStudyComponent) {
-      this.coursePrioritiesToSet[studyComponent] = {};
+      this.studentPriorities.coursesPriorities[studyComponent] = {};
+      console.log('Setting study component: ', studyComponent);
       const courses = this.availableCoursesByStudyComponent[studyComponent];
       for (const course of courses) {
         console.log('Study component:', studyComponent, 'Course:', course, "Priority: 0");
-        this.coursePrioritiesToSet[studyComponent][course.title] = 0; // Default priority
+        this.studentPriorities.coursesPriorities[studyComponent][course.title] = 0; // Default priority
       }
     }
   }

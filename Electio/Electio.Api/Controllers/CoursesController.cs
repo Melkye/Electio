@@ -25,6 +25,19 @@ public class CoursesController : ControllerBase
         return await _coursesService.GetAllAsync();
     }
 
+    [HttpGet("{id:Guid}")]
+    public async Task<ActionResult<CourseGetDTO>> Get(Guid id)
+    {
+        var course = await _coursesService.GetByIdAsync(id);
+
+        if (course == null)
+        {
+            return NotFound();
+        }
+
+        return course;
+    }
+
     // GET api/<CourseController>/5
     //[HttpGet("{id}")]
     //public string Get(int id)
@@ -32,15 +45,17 @@ public class CoursesController : ControllerBase
     //    return "value";
     //}
 
-    // POST api/<CourseController>
-    //[HttpPost]
-    //public void Post([FromBody] string value)
-    //{
-    //}
+    [HttpPost]
+    public async Task<IActionResult> PostAsync([FromBody] CourseCreateDTO dto)
+    {
+        var createdCourse = await _coursesService.CreateAsync(dto);
+
+        return Created(createdCourse.Id.ToString(), createdCourse);
+    }
 
     // POST api/<CourseController>
-    [HttpPost("add-courses")]
-    public async Task<IEnumerable<CourseGetDTO>> PostMany()
+    [HttpPost("add-random-courses")]
+    public async Task<IEnumerable<CourseGetDTO>> PostManyRandomAsync()
     {
         if (!(await _coursesService.GetAllAsync()).Any())
         {

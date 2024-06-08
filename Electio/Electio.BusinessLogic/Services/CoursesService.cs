@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Reflection.Metadata.Ecma335;
+using AutoMapper;
 using Electio.BusinessLogic.DTOs;
 using Electio.DataAccess;
 using Electio.DataAccess.Entities;
@@ -41,11 +42,28 @@ public class CoursesService
         await _unitOfWork.SaveChangesAsync();
     }
 
+    public async Task<CourseGetDTO> CreateAsync(CourseCreateDTO dto)
+    {
+        var course = _mapper.Map<Course>(dto);
+
+        var createdCourse = await _unitOfWork.CourseRepository.CreateAsync(course);
+        await _unitOfWork.SaveChangesAsync();
+
+        return _mapper.Map<CourseGetDTO>(createdCourse);
+    }
+
     public async Task<IEnumerable<CourseGetDTO>> GetAllAsync()
     {
         var courses = await _unitOfWork.CourseRepository.GetAllAsync();
 
         return _mapper.Map<IEnumerable<CourseGetDTO>>(courses);
+    }
+
+    public async Task<CourseGetDTO> GetByIdAsync(Guid id)
+    {
+        var course = await _unitOfWork.CourseRepository.GetByIdAsync(id);
+
+        return _mapper.Map<CourseGetDTO>(course);
     }
 
     public IEnumerable<CourseEnrollmentDTO> GetStudentsPerCourse()

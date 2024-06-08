@@ -22,7 +22,7 @@ export class CourseDetailComponent implements OnInit {
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id') ?? '';
 
-    this.loadStudents(id)
+    this.loadCourse(id);
 
     // this.coursesService.getPlacement(id).subscribe(data => {
     //   this.students = data;
@@ -33,8 +33,21 @@ export class CourseDetailComponent implements OnInit {
 
   loadStudents(courseId: string): void {
     this.coursesService.getCoursePlacement(courseId).subscribe(coursePlacementInfo => {
+      if (coursePlacementInfo.students.length > 0)
+      {
       this.students = coursePlacementInfo.students;
+        
+      }
+      console.log("Students on course ", coursePlacementInfo.title, " are:");
       console.log(coursePlacementInfo);
+    });
+  }
+
+  loadCourse(courseId: string): void {
+    this.coursesService.getCourse(courseId).subscribe(course => {
+      this.course = course;
+
+      this.loadStudents(courseId);
     });
   }
 }

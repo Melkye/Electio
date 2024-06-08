@@ -7,17 +7,24 @@
 <div>
     <mat-card>
         <mat-card-header>
-          <!-- <mat-card-title center>{{ course.title }}</mat-card-title> -->
-          <!-- <mat-card-subtitle>{{ course. }}</mat-card-subtitle> -->
+          <mat-card-title center>{{ course?.title }}</mat-card-title>
+          <mat-card-subtitle>Максимальна кількість студентів на дисципліні: {{ course?.quota}}</mat-card-subtitle>
+          <mat-card-subtitle>Викладається для спеціальностей: {{ course?.specialties}}</mat-card-subtitle>
+          <!-- TODO: add studyYear to course entity -->
+          <mat-card-subtitle>Курс (Поки що освітній компонент): {{ course?.studyComponent}}</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
-          <!-- <p>{{ course.description }}</p> -->
+          <div *ngIf="students.length == 0">
+            <p>Розподіл ще не було проведено або студенти не обирали цю дисципліну</p>`
+          </div>
+          <div *ngIf="students.length != 0">
           <ol>
             <li *ngFor="let student of students">
                     <a [routerLink]="['/students', student.id]">{{ student.name }}</a>
               <!-- Add other enrollment details as needed -->
             </li>
           </ol>
+        </div>
         </mat-card-content>
       </mat-card>
   </div>
