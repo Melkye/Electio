@@ -15,10 +15,12 @@ export class LoginComponent {
     this.authService.login(this.credentials).subscribe(response => {
       localStorage.setItem('token', response.token);
       const role = this.authService.getRole();
+
+      // TODO: make use of this separation
       if (role === 'Admin') {
-        this.router.navigate(['/admin']);
+        this.router.navigate(['/courses']);
       } else if (role === 'Student') {
-        this.router.navigate(['/student']);
+        this.router.navigate(['/courses']);
       }
     });
   }

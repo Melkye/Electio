@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { AdminService } from '../../services/admin.service';
-import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'student-create',

@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, concatMap, defer, map, shareReplay } from 'rxjs';
-import { Student } from '../models/student.model';
 import { Course } from '../models/course.model';
+import { Observable, concatMap } from 'rxjs';
 
 
 // interface Course {

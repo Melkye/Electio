@@ -2,8 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { StudentsService } from '../../services/students.service';
 import { Student } from '../../models/student.model';
-import { Course } from '../../models/course.model';
-import { AvailableCoursesResponse } from '../../models/course.model';
+import { Course, AvailableCoursesResponse } from '../../models/course.model';
 import { StudentPriorities } from '../../models/student-priorities.model';
 import { CoursesService } from '../../services/courses.service';
 
@@ -47,7 +46,7 @@ export class StudentDetailComponent implements OnInit {
 
     this.loadStudent(id);
     
-    this.coursesService.setIsPlacementExecuted().subscribe(isExecuted => {
+    this.coursesService.setIsPlacementExecuted().subscribe((isExecuted: boolean) => {
       this.isPlacementExecuted = isExecuted;
 
 
@@ -148,7 +147,7 @@ export class StudentDetailComponent implements OnInit {
   }
 
   loadCourses(): void {
-    this.coursesService.getCourses().subscribe(courses => {
+    this.coursesService.getCourses().subscribe((courses: Course[]) => {
       this.allCourses = courses;
     });
   }

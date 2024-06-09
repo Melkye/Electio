@@ -21,7 +21,6 @@
           <ol>
             <li *ngFor="let student of students">
                     <a [routerLink]="['/students', student.id]">{{ student.name }}</a>
-              <!-- Add other enrollment details as needed -->
             </li>
           </ol>
         </div>
