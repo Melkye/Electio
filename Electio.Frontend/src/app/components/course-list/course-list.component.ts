@@ -40,7 +40,8 @@ export class CourseListComponent implements OnInit {
 
   loadCourses(): void {
     this.coursesService.getCourses().subscribe(courses => {
-      this.courses = courses;
+      // TODO: update sorting when studyConponent will be string
+      this.courses = courses.sort((a, b) => a.studyComponent - b.studyComponent);
     });
   }
 
@@ -128,6 +129,7 @@ export class CourseListComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.courses.push(result);
+        this.loadCourses();
       }
     });
   }
@@ -143,6 +145,37 @@ export class CourseListComponent implements OnInit {
         if (index !== -1) {
           this.courses[index] = result;
         }
+      }
+    });
+  }
+
+  deleteCourse(courseId: string): void {
+    this.coursesService.deleteCourse(courseId).subscribe(() => {
+      const course = this.courses.find(course => course.id == courseId);
+      console.log('Course deleted successfully with id:', courseId, "title", course!.title);
+      this.courses = this.courses.filter(course => course.id !== courseId);
+    }, error => {
+      console.error('Error deleting course:', error);
+    });
+  }
+
+  setRandomPriorities(): void {
+
+    const dialogRef = this.dialog.open(LoadingDialogComponent, {
+      disableClose: true // Prevents closing the dialog by clicking outside
+    });
+
+    this.coursesService.setRandomPriorities().subscribe({
+      next: () => {
+        console.log('Random priorities set');
+        //this.ngOnInit();
+      },
+      complete: () => {
+        dialogRef.close();
+      },
+      error: (error) => {
+        console.error('Error setting random priorities:', error);
+        dialogRef.close();
       }
     });
   }

@@ -17,3 +17,11 @@
     background-color: rgba(255, 255, 255, 0.1);
   }
   
+  a {
+    text-decoration: none; /* Optional: remove underline */
+    color: black;
+  }
+
+  button {
+    margin: 5px;
+  }

@@ -29,6 +29,14 @@ public class CourseRepository
         return createdCourse.Entity;
     }
 
+    public async Task<Course> UpdateAsync(Guid id, Course course)
+    {
+        course.Id = id;
+        var updatedCourse = _context.Courses.Update(course);
+        //await _context.SaveChangesAsync();
+        return createdCourse.Entity;
+    }
+
     public async Task CreateCoursesAsync(IEnumerable<Course> courses)
     {
         await _context.Courses.AddRangeAsync(courses);

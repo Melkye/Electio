@@ -29,18 +29,24 @@
       <button mat-raised-button
       color="primary"
       (click)="addCourse()">
-      Add Course
-    </button>
+      Додати дисципліну
+      </button>
+
+      <button mat-raised-button
+      color="primary"
+      (click)="setRandomPriorities()">
+      Призначити студентством випадкові пріоритети
+      </button>
     
     </div>
 
     <div class="course-cards">
       <mat-card *ngFor="let course of courses">
-        <button mat-raised-button color="accent" (click)="editCourse(course)">Edit</button>
         <mat-card-header>
           <mat-card-title center><a [routerLink]="['/courses', course.id]">{{ course.title }}</a></mat-card-title>
           <!-- <mat-card-subtitle>{{ course.description }}</mat-card-subtitle> -->
-          <mat-card-subtitle>{{ course.quota }}</mat-card-subtitle>
+          <mat-card-subtitle>Ліміт студентства: {{ course.quota }}</mat-card-subtitle>
+          <mat-card-subtitle>Освітній компонент: {{ course.studyComponent }}</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
           <!-- <p>{{ course.description }}</p> -->
@@ -50,6 +56,14 @@
               <!-- Add other enrollment details as needed -->
             </li>
           </ol>
+          <div>
+            <span>
+              <button mat-raised-button color="accent" (click)="editCourse(course)">Edit</button>
+            </span>
+            <span>
+              <button mat-raised-button color="warn" (click)="deleteCourse(course.id)">Delete</button>
+            </span>
+          </div>
         </mat-card-content>
       </mat-card>
     </div>

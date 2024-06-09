@@ -154,13 +154,14 @@ export class StudentDetailComponent implements OnInit {
   }
 
   initializeCoursePriorities(): void {
+    this.studentPriorities.studentName = this.student.name;
     for (const studyComponent in this.availableCoursesByStudyComponent) {
       this.studentPriorities.coursesPriorities[studyComponent] = {};
       console.log('Setting study component: ', studyComponent);
       const courses = this.availableCoursesByStudyComponent[studyComponent];
       for (const course of courses) {
-        console.log('Study component:', studyComponent, 'Course:', course, "Priority: 0");
-        this.studentPriorities.coursesPriorities[studyComponent][course.title] = 0; // Default priority
+        console.log('Study component:', studyComponent, 'Course:', course, "Priority: -1");
+        this.studentPriorities.coursesPriorities[studyComponent][course.title] = -1; // Default priority
       }
     }
   }

@@ -3,9 +3,9 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'app-loading-dialog',
   template: `
-    <h2 mat-dialog-title>Loading</h2>
+    <h2 mat-dialog-title>Завантаження</h2>
     <mat-dialog-content>
-      <p>Algorithm is running, please wait...</p>
+      <p>Буудь ласка, почекайтe</p>
     </mat-dialog-content>
   `,
   styles: [`

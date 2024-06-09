@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, defer, map, shareReplay } from 'rxjs';
+import { Observable, concatMap, defer, map, shareReplay } from 'rxjs';
 import { Student } from '../models/student.model';
 import { Course } from '../models/course.model';
 
@@ -54,6 +54,14 @@ export class CoursesService {
     return this.http.post<void>(this.apiUrl, course);
   }
 
+  updateCourse(id: string, course: Course): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${id}`, course);
+  }
+
+  deleteCourse(courseId: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${courseId}`);
+  }
+
   addCourses(courses: string[]): Observable<Course[]> {
     return this.http.post<Course[]>(`${this.apiUrl}/add-courses`, courses);
   }
@@ -84,5 +92,12 @@ export class CoursesService {
 
   getPlacementEficiency(): Observable<string> {
     return this.http.get<string>(`${this.apiUrl}/placement-efficiency`);
+  }
+
+  setRandomPriorities(): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/placement`, {})
+      .pipe(
+        concatMap(() => this.http.post<void>(`${this.apiUrl.replace('Courses', 'Students')}/set-random-priorities`, {}))
+      );
   }
 }

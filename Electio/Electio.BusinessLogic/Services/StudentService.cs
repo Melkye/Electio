@@ -157,7 +157,7 @@ public class StudentService
                 
                 
                 //-------------------------------- remove save
-                //await _unitOfWork.SaveChangesAsync(); 
+                await _unitOfWork.SaveChangesAsync(); 
                 unassignedStudents.Remove(currentStudent);
                 continue;
             }

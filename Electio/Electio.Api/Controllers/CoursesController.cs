@@ -53,6 +53,30 @@ public class CoursesController : ControllerBase
         return Created(createdCourse.Id.ToString(), createdCourse);
     }
 
+    [HttpPut("{id:Guid}")]
+    public async Task<IActionResult> PutAsync(Guid id, [FromBody] CourseCreateDTO dto)
+    {
+        var updatedCourse = await _coursesService.UpdateAsync(id, dto);
+
+        return Created(updatedCourse.Id.ToString(), updatedCourse);
+    }
+
+    [HttpDelete("{id:Guid}")]
+    public async Task<IActionResult> DeleteAsync(Guid id)
+    {
+        await _coursesService.DeleteAsync(id);
+
+        return NoContent();
+    }
+
+    [HttpDelete]
+    public async Task<IActionResult> DeleteAsync()
+    {
+        await _coursesService.DeleteAsync();
+
+        return NoContent();
+    }
+
     // POST api/<CourseController>
     [HttpPost("add-random-courses")]
     public async Task<IEnumerable<CourseGetDTO>> PostManyRandomAsync()
@@ -117,13 +141,7 @@ public class CoursesController : ControllerBase
         return _coursesService.GetPlacementEfficiency();
     }
 
-    [HttpDelete]
-    public async Task<IActionResult> DeleteAsync()
-    {
-        await _coursesService.DeleteAsync();
 
-        return NoContent();
-    }
 
     [HttpDelete("placement")]
     public async Task<IActionResult> DeletePlacementsAsync()

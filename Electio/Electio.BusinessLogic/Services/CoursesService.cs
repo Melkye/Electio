@@ -52,6 +52,22 @@ public class CoursesService
         return _mapper.Map<CourseGetDTO>(createdCourse);
     }
 
+    public async Task<CourseGetDTO> UpdateAsync(Guid id, CourseCreateDTO dto)
+    {
+        var course = _mapper.Map<Course>(dto);
+
+        var updatedCourse = await _unitOfWork.CourseRepository.UpdateAsync(id, course);
+        await _unitOfWork.SaveChangesAsync();
+
+        return _mapper.Map<CourseGetDTO>(updatedCourse);
+    }
+
+    public async Task DeleteAsync(Guid id)
+    {
+        await _unitOfWork.CourseRepository.DeleteAsync(id);
+        await _unitOfWork.SaveChangesAsync();
+    }
+
     public async Task<IEnumerable<CourseGetDTO>> GetAllAsync()
     {
         var courses = await _unitOfWork.CourseRepository.GetAllAsync();
