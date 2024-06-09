@@ -1,26 +1,46 @@
+using System.Text;
 using AutoMapper;
 using Electio.BusinessLogic.Profiles;
 using Electio.BusinessLogic.Services;
 using Electio.DataAccess;
+using Electio.DataAccess.Identity;
 using Electio.DataAccess.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
 
-// Register ElectioDbContext to DI container
-//builder.Services.AddDbContext<ElectioDbContext>((sp, options) =>
-//{
-//    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-//});
-
 builder.Services.AddDbContext<ElectioDbContext>(
     optionsBuilder => optionsBuilder.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")),
     contextLifetime: ServiceLifetime.Transient);
-////contextLifetime: ServiceLifetime.Singleton);
-////builder.Services.AddDbContext<ElectioDbContext>();
+
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddEntityFrameworkStores<ElectioDbContext>()
+    .AddDefaultTokenProviders();
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        };
+    });
 
 var mapperConfig = new MapperConfiguration(mc =>
 {
@@ -37,6 +57,11 @@ builder.Services.AddTransient<StudentOnCourseRepository>();
 builder.Services.AddTransient<StudentService>();
 builder.Services.AddTransient<CoursesService>();
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("RequireStudentRole", policy => policy.RequireRole("Student"));
+});
 //builder.Services.AddTransient<ElectioDbContext, ElectioDbContext>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -65,4 +90,35 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<ElectioDbContext>();
+    context.Database.Migrate();
+    var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    await SeedData(userManager, roleManager);
+}
+
 app.Run();
+
+async Task SeedData(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+{
+    if (!await roleManager.RoleExistsAsync("Admin"))
+    {
+        await roleManager.CreateAsync(new IdentityRole("Admin"));
+    }
+
+    if (!await roleManager.RoleExistsAsync("Student"))
+    {
+        await roleManager.CreateAsync(new IdentityRole("Student"));
+    }
+
+    var adminUser = await userManager.FindByNameAsync("admin");
+    if (adminUser == null)
+    {
+        adminUser = new ApplicationUser { UserName = "admin", Email = "admin@example.com" };
+        await userManager.CreateAsync(adminUser, "AdminPassword123!");
+        await userManager.AddToRoleAsync(adminUser, "Admin");
+    }
+}

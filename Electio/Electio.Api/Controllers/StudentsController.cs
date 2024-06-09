@@ -3,6 +3,7 @@ using Electio.BusinessLogic.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Electio.DataAccess.Entities;
 using Electio.DataAccess.Repositories;
+using System.Security.Claims;
 
 namespace Electio.Api.Controllers
 {
@@ -26,6 +27,14 @@ namespace Electio.Api.Controllers
         [HttpGet("{id:Guid}")]
         public async Task<ActionResult<StudentGetDTO>> Get(Guid id)
         {
+            //var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            //// Check if the authenticated user's ID matches the requested ID
+            //if (userId != id)
+            //{
+            //    return Forbid();
+            //}
+
             var student = await _studentService.GetByIdAsync(id);
 
             if (student == null)

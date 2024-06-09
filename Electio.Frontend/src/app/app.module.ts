@@ -1,9 +1,17 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
+import { JwtModule } from '@auth0/angular-jwt';
+import { AuthService } from '../app/services/auth.service';
+import { AuthGuard } from '../app/guards/auth.guard';
+import { RoleGuard } from '../app/guards/role.guard';
+import { JwtInterceptor } from '../app/interceptors/jwt.interceptor';
+
+
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -25,10 +33,16 @@ import { CourseListComponent } from './components/course-list/course-list.compon
 import { CourseDetailComponent } from './components/course-detail/course-detail.component';
 import { StudentListComponent } from './components/student-list/student-list.component';
 import { StudentDetailComponent } from './components/student-detail/student-detail.component';
+import { StudentCreateComponent } from './components/student-create/student-create.component';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { LoadingDialogComponent } from './components/loading-dialog/loading-dialog.component';
 import { CourseFormComponent } from './components/course-form/course-form.component';
+import { LoginComponent } from './components/login/login.component';
+
+export function tokenGetter() {
+  return localStorage.getItem('token');
+}
 
 @NgModule({
   declarations: [
@@ -37,10 +51,12 @@ import { CourseFormComponent } from './components/course-form/course-form.compon
     CourseDetailComponent,
     StudentListComponent,
     StudentDetailComponent,
+    StudentCreateComponent,
     HeaderComponent,
     FooterComponent, 
     LoadingDialogComponent,
-    CourseFormComponent
+    CourseFormComponent,
+    LoginComponent,
   ],
   imports: [
     BrowserModule,
@@ -63,8 +79,20 @@ import { CourseFormComponent } from './components/course-form/course-form.compon
     MatIconModule,
     MatListModule,
     MatDialogModule,
+    JwtModule.forRoot({
+      config: {
+        tokenGetter: tokenGetter,
+        allowedDomains: ['localhost:5207'],
+        disallowedRoutes: ['http://localhost:5207/api/auth/login', 'http://localhost:5207/api/auth/register'],
+      },
+    }),
   ],
-  providers: [],
+  providers: [
+    AuthService,
+    AuthGuard,
+    RoleGuard,
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
