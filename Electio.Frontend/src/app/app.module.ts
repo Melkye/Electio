@@ -5,7 +5,6 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { JwtModule } from '@auth0/angular-jwt';
 import { AuthService } from '../app/services/auth.service';
 import { AuthGuard } from '../app/guards/auth.guard';
 import { RoleGuard } from '../app/guards/role.guard';
@@ -78,13 +77,7 @@ export function tokenGetter() {
     MatIconModule,
     MatListModule,
     MatDialogModule,
-    JwtModule.forRoot({
-      config: {
-        tokenGetter: tokenGetter,
-        allowedDomains: ['localhost:5207'],
-        disallowedRoutes: ['http://localhost:5207/api/auth/login', 'http://localhost:5207/api/auth/register'],
-      },
-    }),
+
   ],
   providers: [
     AuthService,
