@@ -9,6 +9,8 @@ public class Student
 
     public double AverageGrade { get; set; }
 
+    public string Group { get; set; } = string.Empty;
+
     public Specialty Specialty { get; set; }
 
     public Faculty Faculty { get; set; }

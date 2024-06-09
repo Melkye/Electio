@@ -1,10 +1,12 @@
 ﻿using Electio.DataAccess.Entities;
+using Electio.DataAccess.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace Electio.DataAccess;
 
-public class ElectioDbContext : DbContext
+public class ElectioDbContext : IdentityDbContext<ApplicationUser>
 {
     public DbSet<Student> Students { get; set; }
     public DbSet<Course> Courses { get; set; }
@@ -15,10 +17,11 @@ public class ElectioDbContext : DbContext
 
     }
 
-
     // TODO: add OnDeleteCascade
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<Student>(entity =>
         {
             entity.HasKey(e => e.Id);

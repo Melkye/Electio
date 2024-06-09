@@ -117,7 +117,7 @@ async Task SeedData(UserManager<ApplicationUser> userManager, RoleManager<Identi
     var adminUser = await userManager.FindByNameAsync("admin");
     if (adminUser == null)
     {
-        adminUser = new ApplicationUser { UserName = "admin", Email = "admin@example.com" };
+        adminUser = new ApplicationUser { Name = "Admin User", UserName = "admin", Email = "admin@example.com" };
         await userManager.CreateAsync(adminUser, "AdminPassword123!");
         await userManager.AddToRoleAsync(adminUser, "Admin");
     }
