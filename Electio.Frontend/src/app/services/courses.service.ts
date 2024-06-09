@@ -100,4 +100,11 @@ export class CoursesService {
         concatMap(() => this.http.post<void>(`${this.apiUrl.replace('Courses', 'Students')}/set-random-priorities`, {}))
       );
   }
+
+  setCloseToRealPriorities(): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/placement`, {})
+      .pipe(
+        concatMap(() => this.http.post<void>(`${this.apiUrl.replace('Courses', 'Students')}/set-close-to-real-priorities`, {}))
+      );
+  }
 }

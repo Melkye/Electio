@@ -91,7 +91,13 @@ namespace Electio.Api.Controllers
         [HttpPost("set-random-priorities")]
         public async Task<IEnumerable<IEnumerable<StudentOnCourse>>> SetRandomPriorities()
         {
-            return await _studentService.SetRandomPriorities();
+            return await _studentService.SetRandomPriorities(isCloseToReal: false);
+        }
+
+        [HttpPost("set-close-to-real-priorities")]
+        public async Task<IEnumerable<IEnumerable<StudentOnCourse>>> SetCloseToRealPriorities()
+        {
+            return await _studentService.SetRandomPriorities(isCloseToReal: true);
         }
 
         [HttpPost("{id:guid}/priorities")]

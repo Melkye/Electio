@@ -35,7 +35,13 @@
       <button mat-raised-button
       color="primary"
       (click)="setRandomPriorities()">
-      Призначити студентством випадкові пріоритети
+      Призначити випадкові пріоритети
+      </button>
+
+      <button mat-raised-button
+      color="accent"
+      (click)="setCloseToRealPriorities()">
+      Призначити близькі до реальних пріоритети
       </button>
     
     </div>
@@ -50,13 +56,16 @@
         </mat-card-header>
         <mat-card-content>
           <!-- <p>{{ course.description }}</p> -->
-          <ol>
+          <div *ngIf="isPlacementExecuted">
+          <button mat-raised-button (click)="toggleVisibility(course.id)">Студентство</button>
+          <ol *ngIf="visibility.get(course.id)">
             <li *ngFor="let student of getEnrollmentsForCourse(course)?.students">
-                    <a [routerLink]="['/students', student.id]">{{ student.name }}</a>
+              <a [routerLink]="['/students', student.id]">{{ student.name }}</a>
               <!-- Add other enrollment details as needed -->
             </li>
           </ol>
-          <div>
+          </div>
+          <div *ngIf="!isPlacementExecuted">
             <span>
               <button mat-raised-button color="accent" (click)="editCourse(course)">Edit</button>
             </span>

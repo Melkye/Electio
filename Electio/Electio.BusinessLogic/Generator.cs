@@ -1,4 +1,5 @@
-﻿using Bogus;
+﻿using System.Linq;
+using Bogus;
 using Bogus.Distributions.Gaussian;
 using Electio.BusinessLogic.DTOs;
 using Electio.DataAccess.Entities;
@@ -98,7 +99,7 @@ public static class Generator
         return studentsFaker.Generate(numberOfStudents);
     }
 
-    public static List<StudentPrioritiesDTO> GenerateStudentPriorities(List<StudentGetDTO> students, List<CourseGetDTO> courses)
+    public static List<StudentPrioritiesDTO> GenerateStudentPriorities(List<StudentGetDTO> students, List<CourseGetDTO> courses, bool isCloseToReal)
     {
         var studyComponentCapacities = courses
             .GroupBy(c => c.StudyComponent)
@@ -115,7 +116,10 @@ public static class Generator
 
         foreach (var student in students)
         {
-            allStudentsPriorities.Add(GenerateStudentPriorities(student, courses));
+            if (isCloseToReal)
+                allStudentsPriorities.Add(GenerateStudentPrioritiesCloseToReal(student, courses));
+            else
+                allStudentsPriorities.Add(GenerateStudentPriorities(student, courses));
         }
 
         return allStudentsPriorities;
@@ -153,7 +157,64 @@ public static class Generator
                     c =>
                     {  
                         var priority = availablePriorities.Last();
-                        availablePriorities.RemoveAt(availablePriorities.Count - 1);
+                        availablePriorities.Remove(priority);
+                        return priority;
+                    })
+                );
+        }
+
+        return studentPriorities;
+    }
+
+    public static StudentPrioritiesDTO GenerateStudentPrioritiesCloseToReal(StudentGetDTO student, List<CourseGetDTO> courses)
+    {
+        var studentPriorities = new StudentPrioritiesDTO
+        {
+            StudentName = student.Name,
+        };
+
+        var studyComponentsAvailableToStudent = Helper.GetStudyComponentsAvailableToStudyYear(student.StudyYear);
+
+        var coursesAvailableToStudent = courses
+            .Where(c =>
+                c.Faculty == student.Faculty
+                && c.Specialties.Contains(student.Specialty)
+                && studyComponentsAvailableToStudent.Contains(c.StudyComponent))
+            .ToList();
+
+        var coursesByStudyComponent = coursesAvailableToStudent
+            .GroupBy(c => c.StudyComponent)
+            .ToDictionary(group => group.Key, group => group.ToList());
+
+        var highDemandCourses = coursesByStudyComponent
+            .Select(kvp => new { StudyComponent = kvp.Key, Courses = kvp.Value.Take(kvp.Value.Count / 3)})
+            .ToDictionary(kvp => kvp.StudyComponent, kvp => kvp.Courses);
+
+        foreach (var (studyComponent, componentCourses) in coursesByStudyComponent)
+        {
+            var highDemandPriorities = new Faker().Random.Shuffle(Enumerable.Range(1, highDemandCourses[studyComponent].Count())).ToList();
+
+            var notHighDemandPriorities = 
+                new Faker().Random.Shuffle(Enumerable.Range(1, componentCourses.Count))
+                .Except(highDemandPriorities).ToList();
+
+            studentPriorities.CoursesPriorities.Add(
+                studyComponent,
+                componentCourses.ToDictionary(
+                    c => c.Title,
+                    c =>
+                    {
+                        var priority = int.MaxValue;
+                        if (highDemandCourses[studyComponent].Contains(c))
+                        {
+                            priority = highDemandPriorities.Last();
+                            highDemandPriorities.Remove(priority);
+                        }
+                        else
+                        {
+                            priority = notHighDemandPriorities.Last();
+                            notHighDemandPriorities.Remove(priority);
+                        }
                         return priority;
                     })
                 );

@@ -20,6 +20,7 @@ export class CourseListComponent implements OnInit {
   isPlacementExecuted = false;
   usedAlgorithm = "";
   placementEfficiency = 0;
+  visibility : Map<string, boolean> = new Map<string, boolean>();
 
   constructor(private coursesService: CoursesService,  private dialog: MatDialog) {}
   
@@ -34,8 +35,6 @@ export class CourseListComponent implements OnInit {
         this.loadPlacementEfficiency();
       }
     });
-    
-
   }
 
   loadCourses(): void {
@@ -47,6 +46,9 @@ export class CourseListComponent implements OnInit {
 
   loadCoursePlacements(): void {
     this.coursesService.getAllCoursesPlacement().subscribe(enrollments => {
+      for (let i = 0; i < enrollments.length; i++) {
+        this.visibility.set(enrollments[i].id, false);
+      }
       this.courseEnrollments = enrollments;
     });
   }
@@ -160,7 +162,6 @@ export class CourseListComponent implements OnInit {
   }
 
   setRandomPriorities(): void {
-
     const dialogRef = this.dialog.open(LoadingDialogComponent, {
       disableClose: true // Prevents closing the dialog by clicking outside
     });
@@ -178,5 +179,31 @@ export class CourseListComponent implements OnInit {
         dialogRef.close();
       }
     });
+  }
+
+  setCloseToRealPriorities(): void {
+    const dialogRef = this.dialog.open(LoadingDialogComponent, {
+      disableClose: true // Prevents closing the dialog by clicking outside
+    });
+
+    this.coursesService.setCloseToRealPriorities().subscribe({
+      next: () => {
+        console.log('Close to real priorities set');
+        //this.ngOnInit();
+      },
+      complete: () => {
+        dialogRef.close();
+      },
+      error: (error) => {
+        console.error('Error setting close to real priorities:', error);
+        dialogRef.close();
+      }
+    });
+  }
+
+
+  toggleVisibility(courseId: string) {
+    const previous = this.visibility.get(courseId);
+    this.visibility.set(courseId, !previous);
   }
 }

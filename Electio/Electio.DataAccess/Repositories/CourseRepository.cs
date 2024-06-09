@@ -34,7 +34,7 @@ public class CourseRepository
         course.Id = id;
         var updatedCourse = _context.Courses.Update(course);
         //await _context.SaveChangesAsync();
-        return createdCourse.Entity;
+        return updatedCourse.Entity;
     }
 
     public async Task CreateCoursesAsync(IEnumerable<Course> courses)
@@ -129,7 +129,7 @@ public class CourseRepository
             s => s.Id,
             (soc, s) => new { soc.Priority, s.AverageGrade });
 
-        return priorityGrade.Sum(pg =>  pg.AverageGrade * pg.Priority)
+        return priorityGrade.Sum(pg =>  pg.AverageGrade / pg.Priority)
             / priorityGrade.Sum(pg => pg.AverageGrade); 
     }
 }

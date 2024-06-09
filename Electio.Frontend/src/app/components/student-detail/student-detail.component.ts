@@ -160,8 +160,8 @@ export class StudentDetailComponent implements OnInit {
       console.log('Setting study component: ', studyComponent);
       const courses = this.availableCoursesByStudyComponent[studyComponent];
       for (const course of courses) {
-        console.log('Study component:', studyComponent, 'Course:', course, "Priority: -1");
-        this.studentPriorities.coursesPriorities[studyComponent][course.title] = -1; // Default priority
+        console.log('Study component:', studyComponent, 'Course:', course, "Priority: 2147483647 (max c# int)");
+        this.studentPriorities.coursesPriorities[studyComponent][course.title] = 2147483647; // Default priority, max c# int
       }
     }
   }

@@ -79,7 +79,7 @@ public class StudentService
         return studentsOnCoursesAfterPrioritiesSet;
     }
 
-    public async Task<IEnumerable<IEnumerable<StudentOnCourse>>> SetRandomPriorities()
+    public async Task<IEnumerable<IEnumerable<StudentOnCourse>>> SetRandomPriorities(bool isCloseToReal)
     {
         // TODO: get rid of mapping here | create a special servise foe placement?
         var students = await GetAllAsync();
@@ -87,7 +87,7 @@ public class StudentService
         var courses = await _unitOfWork.CourseRepository.GetAllAsync();
         var coursesDTOs = _mapper.Map<List<CourseGetDTO>>(courses);
 
-        var dtos = Generator.GenerateStudentPriorities(studentsDTOs, coursesDTOs);
+        var dtos = Generator.GenerateStudentPriorities(studentsDTOs, coursesDTOs, isCloseToReal);
 
         var results = new List<List<StudentOnCourse>>();
         foreach(var dto in dtos)
