@@ -17,8 +17,8 @@ export class LoginComponent {
       const role = this.authService.getRole();
 
       // TODO: make use of this separation
-      if (role === 'admin') {
-        this.router.navigate(['/courses']);
+      if (role === 'admin' || role === 'Admin') {
+        this.router.navigate(['/students']);
       } else if (role === 'student') {
         this.router.navigate(['/courses']);
       }

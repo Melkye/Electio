@@ -1,26 +1,32 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { jwtDecode } from 'jwt-decode'; // Import jwt_decode from jwt-decode library
+import { jwtDecode } from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RoleGuard implements CanActivate {
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(private authService: AuthService, private router: Router) {}
 
-  canActivate(
-    next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): boolean {
+  canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
     const token = this.authService.token;
 
+    console.log("Token in role guard:", token);
+
     if (token) {
-      const decodedToken: any = jwtDecode(token); // Decode the token using jwt_decode
+      try {
+        const decodedToken: any = jwtDecode(token);
+        console.log("Decoded token: ", decodedToken)
+        const expectedRole = next.data['expectedRole'];
 
-      const expectedRole = next.data['expectedRole'];
+        console.log("some expected role:", next.data['expectedRole'])
 
-      if (decodedToken && decodedToken.role === expectedRole) {
-        return true;
+        if (decodedToken && decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] === expectedRole) {
+          return true;
+        }
+      } catch (e) {
+        console.error('Error decoding token', e);
       }
     }
 

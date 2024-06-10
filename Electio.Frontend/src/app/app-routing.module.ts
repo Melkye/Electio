@@ -17,7 +17,7 @@ const routes: Routes = [
   { path: 'courses/:id', component: CourseDetailComponent },
   { path: 'students', component: StudentListComponent },
   { path: 'students/:id', component: StudentDetailComponent },
-  { path: 'student-create', component: StudentCreateComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: 'Admin' } },
+  { path: 'student-create', component: StudentCreateComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: 'admin' } },
   // { path: 'student (student-detail?)', component: StudentComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: 'Student' } },
 ];
 
