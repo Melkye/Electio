@@ -7,10 +7,6 @@ public class StudentCreateDTO
 
     public double AverageGrade { get; set; }
 
-    // TODO: handle situation where not all courses are listed
-    // TODO: create a separate entity and mwthods for setting priorities
-    //public Dictionary<string, int>? CoursesPriorities { get; set; }
-
     public Specialty Specialty { get; set; }
 
     public Faculty Faculty { get; set; }

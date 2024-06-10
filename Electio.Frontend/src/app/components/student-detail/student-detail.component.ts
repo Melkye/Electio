@@ -1,16 +1,18 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router  } from '@angular/router';
 import { StudentsService } from '../../services/students.service';
 import { Student } from '../../models/student.model';
 import { Course, AvailableCoursesResponse } from '../../models/course.model';
 import { StudentPriorities } from '../../models/student-priorities.model';
 import { CoursesService } from '../../services/courses.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-student-detail',
   templateUrl: './student-detail.component.html',
 })
 export class StudentDetailComponent implements OnInit {
+
   student: Student = { 
     id: 'abubaId', 
     name: 'abubaName', 
@@ -35,12 +37,25 @@ export class StudentDetailComponent implements OnInit {
     coursesPriorities: {}
   };
 
-  constructor(private studentsService: StudentsService,
-    private coursesService: CoursesService, private route: ActivatedRoute)  {  }
+  constructor(
+    private studentsService: StudentsService,
+    private coursesService: CoursesService,
+    private authService: AuthService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {  
+    const studentIdJWT = this.authService.getStudentId();
+
     const id = this.route.snapshot.paramMap.get('id') ?? '';
 
+    // if user is not admin (admin has empty studentId) and if they want to acces data of other user
+    if (studentIdJWT !== "" && studentIdJWT !== id ) {
+      // If the logged-in user is not trying to access their own details, redirect them
+      this.router.navigate(['/']);
+      return;
+    }
     // this.loadAvailableCoursesGroups();
     // this.initializeCoursePriorities();
 

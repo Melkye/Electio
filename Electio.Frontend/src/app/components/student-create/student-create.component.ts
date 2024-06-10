@@ -6,7 +6,16 @@ import { AdminService } from '../../services/admin.service';
   templateUrl: './student-create.component.html'
 })
 export class StudentCreateComponent {
-  student = { name:'', username: '', email: '', password: '' };
+  student = {
+    name: '',
+    username: '',
+    email: '',
+    password: '',
+    averageGrade: 100,
+    specialty: 121,
+    faculty: 1,
+    studyYear: 1
+  };
 
   constructor(private adminService: AdminService) {}
 

@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Electio.DataAccess.Identity;
+using Electio.BusinessLogic.Services;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -15,11 +16,17 @@ public class AuthController : ControllerBase
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IConfiguration _configuration;
 
-    public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IConfiguration configuration)
+    private readonly StudentService _studentService;
+    public AuthController(
+        UserManager<ApplicationUser> userManager, 
+        SignInManager<ApplicationUser> signInManager, 
+        IConfiguration configuration, 
+        StudentService studentService)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _configuration = configuration;
+        _studentService = studentService;
     }
 
     [HttpPost("login")]
@@ -38,12 +45,15 @@ public class AuthController : ControllerBase
     {
         var admins = await _userManager.GetUsersInRoleAsync("Admin");
         var role = admins.Contains(user) ? "Admin" : "Student";
+
+        var studentId = _studentService.GetAllAsync().Result.FirstOrDefault(s => s.Name == user.Name)?.Id;
         var claims = new[]
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(ClaimTypes.NameIdentifier, user.Id),
-            new Claim(ClaimTypes.Role, role) // Assumes the user role is stored in the username, adjust as needed
+            new Claim(ClaimTypes.Role, role), // Assumes the user role is stored in the username, adjust as needed
+            new Claim("studentId", studentId.ToString() ?? "")
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));

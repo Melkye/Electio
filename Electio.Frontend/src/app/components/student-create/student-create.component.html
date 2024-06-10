@@ -16,5 +16,21 @@
     <label for="password">Password</label>
     <input type="password" id="password" [(ngModel)]="student.password" name="password" required>
   </div>
+  <div>
+    <label for="averageGrade">Average Grade</label>
+    <input type="number" id="averageGrade" [(ngModel)]="student.averageGrade" name="averageGrade" required>
+  </div>
+  <div>
+    <label for="specialty">Specialty</label>
+    <input type="text" id="specialty" [(ngModel)]="student.specialty" name="specialty" required>
+  </div>
+  <div>
+    <label for="faculty">Faculty</label>
+    <input type="text" id="faculty" [(ngModel)]="student.faculty" name="faculty" required>
+  </div>
+  <div>
+    <label for="studyYear">Study Year</label>
+    <input type="number" id="studyYear" [(ngModel)]="student.studyYear" name="studyYear" required>
+  </div>
   <button type="submit">Create Student</button>
 </form>

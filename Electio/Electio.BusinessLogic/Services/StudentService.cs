@@ -20,12 +20,13 @@ public class StudentService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<StudentGetDTO> Create(StudentCreateDTO dto)
+    public async Task<StudentGetDTO> CreateAsync(StudentCreateDTO dto)
     {
         Student student = _mapper.Map<Student>(dto);
         student.Id = Guid.NewGuid();
 
         student = await _unitOfWork.StudentRepository.CreateStudentAsync(student);
+        await _unitOfWork.SaveChangesAsync();
 
         return _mapper.Map<StudentGetDTO>(student);
     }

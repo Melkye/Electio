@@ -43,4 +43,10 @@ export class AuthService {
     }
     return null;
   }
+
+  getStudentId(): string {
+    if (!this.token) return '';
+    const decodedToken: any = jwtDecode(this.token);
+    return decodedToken.studentId; // Assuming the user ID is stored in the 'jit' claim
+  }
 }

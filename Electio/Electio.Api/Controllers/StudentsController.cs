@@ -81,7 +81,7 @@ namespace Electio.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<StudentGetDTO>> Post([FromBody] StudentCreateDTO studentDTO)
         {
-            var student = await _studentService.Create(studentDTO);
+            var student = await _studentService.CreateAsync(studentDTO);
 
             return CreatedAtAction(nameof(Get), new { id = student.Id }, student);
         }
