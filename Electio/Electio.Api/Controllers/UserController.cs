@@ -18,7 +18,7 @@ public class UserController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> CreateStudent([FromBody] CreateStudentModel model)
     {
-        var user = new ApplicationUser { UserName = model.Username, Email = model.Email };
+        var user = new ApplicationUser { Name = model.Name, UserName = model.Username, Email = model.Email };
         var result = await _userManager.CreateAsync(user, model.Password);
         if (result.Succeeded)
         {
@@ -31,7 +31,8 @@ public class UserController : ControllerBase
 
 public class CreateStudentModel
 {
-    public string Username { get; set; }
-    public string Email { get; set; }
-    public string Password { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Username { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
 }

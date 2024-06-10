@@ -10,7 +10,7 @@ export class AdminService {
 
   constructor(private http: HttpClient) {}
 
-  createStudent(student: { username: string, email: string, password: string }): Observable<any> {
+  createStudent(student: { name: string, username: string, email: string, password: string }): Observable<any> {
     return this.http.post(`${this.apiUrl}/create-student`, student);
   }
 }

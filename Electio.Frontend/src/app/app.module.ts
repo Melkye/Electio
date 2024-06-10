@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { AuthService } from '../app/services/auth.service';
+import { AdminService } from '../app/services/admin.service';
 import { AuthGuard } from '../app/guards/auth.guard';
 import { RoleGuard } from '../app/guards/role.guard';
 import { JwtInterceptor } from '../app/interceptors/jwt.interceptor';
@@ -80,10 +80,14 @@ export function tokenGetter() {
 
   ],
   providers: [
-    AuthService,
+    AdminService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: JwtInterceptor,
+      multi: true
+    },
     AuthGuard,
     RoleGuard,
-    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]
 })

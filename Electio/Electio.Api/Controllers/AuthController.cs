@@ -28,20 +28,22 @@ public class AuthController : ControllerBase
         var user = await _userManager.FindByNameAsync(model.Username);
         if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
         {
-            var token = GenerateJwtToken(user);
+            var token = await GenerateJwtTokenAsync(user);
             return Ok(new { token });
         }
         return Unauthorized();
     }
 
-    private string GenerateJwtToken(ApplicationUser user)
+    private async Task<string> GenerateJwtTokenAsync(ApplicationUser user)
     {
+        var admins = await _userManager.GetUsersInRoleAsync("Admin");
+        var role = admins.Contains(user) ? "Admin" : "Student";
         var claims = new[]
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(ClaimTypes.NameIdentifier, user.Id),
-            new Claim(ClaimTypes.Role, user.UserName) // Assumes the user role is stored in the username, adjust as needed
+            new Claim(ClaimTypes.Role, role) // Assumes the user role is stored in the username, adjust as needed
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
