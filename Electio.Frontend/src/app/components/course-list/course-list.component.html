@@ -2,50 +2,51 @@
 <div class="container">
     <h2>Дисципліни</h2>
 
-    <div *ngIf="isPlacementExecuted">
-      <button mat-raised-button 
-      color='warn'
-      (click)="unenrollEveryone()">
-      Скасувати розподіл
-      </button>
-      <span>
-        Efficiency: {{ placementEfficiency | number:'1.2-2' }}
-      </span>
+    <div *ngIf="isAdmin">
+      <div *ngIf="isPlacementExecuted">
+        <button mat-raised-button 
+        color='warn'
+        (click)="unenrollEveryone()">
+        Скасувати розподіл
+        </button>
+        <span>
+          Efficiency: {{ placementEfficiency | number:'1.2-2' }}
+        </span>
+      </div>
+
+      <div *ngIf="!isPlacementExecuted">
+        <button mat-raised-button 
+        color='primary'
+        (click)="runGBPAlgorithm()">
+        Розподілити алгогритмом GBP
+        </button>
+
+        <button mat-raised-button 
+        color='warn'
+        (click)="runATBPAlgorithm()">
+        Розподілити алгогритмом ATBP
+        </button>
+
+        <button mat-raised-button
+        color="primary"
+        (click)="addCourse()">
+        Додати дисципліну
+        </button>
+
+        <button mat-raised-button
+        color="primary"
+        (click)="setRandomPriorities()">
+        Призначити випадкові пріоритети
+        </button>
+
+        <button mat-raised-button
+        color="accent"
+        (click)="setCloseToRealPriorities()">
+        Призначити близькі до реальних пріоритети
+        </button>
+      
+      </div>
     </div>
-
-    <div *ngIf="!isPlacementExecuted">
-      <button mat-raised-button 
-      color='primary'
-      (click)="runGBPAlgorithm()">
-      Розподілити алгогритмом GBP
-      </button>
-
-      <button mat-raised-button 
-      color='warn'
-      (click)="runATBPAlgorithm()">
-      Розподілити алгогритмом ATBP
-      </button>
-
-      <button mat-raised-button
-      color="primary"
-      (click)="addCourse()">
-      Додати дисципліну
-      </button>
-
-      <button mat-raised-button
-      color="primary"
-      (click)="setRandomPriorities()">
-      Призначити випадкові пріоритети
-      </button>
-
-      <button mat-raised-button
-      color="accent"
-      (click)="setCloseToRealPriorities()">
-      Призначити близькі до реальних пріоритети
-      </button>
-    
-    </div>
-
     <div class="course-cards">
       <mat-card *ngFor="let course of courses">
         <mat-card-header>
@@ -65,7 +66,7 @@
             </li>
           </ol>
           </div>
-          <div *ngIf="!isPlacementExecuted">
+          <div *ngIf="!isPlacementExecuted && isAdmin">
             <span>
               <button mat-raised-button color="accent" (click)="editCourse(course)">Edit</button>
             </span>

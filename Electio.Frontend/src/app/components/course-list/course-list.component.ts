@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { Course } from '../../models/course.model';
 import { CourseEnrollment } from '../../models/course-enrollment.model';
 import { CoursesService } from '../../services/courses.service';
+import { AuthService } from '../../services/auth.service';
 import { concatMap } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { CourseFormComponent } from '../course-form/course-form.component';
@@ -15,6 +16,7 @@ import { LoadingDialogComponent } from '../loading-dialog/loading-dialog.compone
 })
 export class CourseListComponent implements OnInit {
 [x: string]: any;
+  isAdmin: boolean = false;
   courses: Course[] = [];
   courseEnrollments: CourseEnrollment[] = [];
   isPlacementExecuted = false;
@@ -22,9 +24,14 @@ export class CourseListComponent implements OnInit {
   placementEfficiency = 0;
   visibility : Map<string, boolean> = new Map<string, boolean>();
 
-  constructor(private coursesService: CoursesService,  private dialog: MatDialog) {}
-  
+  constructor(
+    private coursesService: CoursesService, 
+    private authService: AuthService,
+    private dialog: MatDialog) {}
+
   ngOnInit(): void {
+    this.isAdmin = this.authService.getRole() == "Admin";
+
     this.loadCourses();
     this.loadCoursePlacements();
     
