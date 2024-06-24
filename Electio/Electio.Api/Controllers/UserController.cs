@@ -39,7 +39,7 @@ public class UserController : ControllerBase
         {
             await _userManager.AddToRoleAsync(user, "Student");
             await _studentService.CreateAsync(student);
-            return Ok();
+            return Created();
         }
         return BadRequest(result.Errors);
     }
