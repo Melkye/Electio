@@ -1,0 +1,21 @@
+@startuml
+class UserController {
+    + UserController(userManager:UserManager<ApplicationUser>, studentService:StudentService)
+    + <<async>> CreateStudent(model:CreateStudentModel) : Task<IActionResult>
+}
+class CreateStudentModel {
+    + Username : string <<get>> <<set>>
+    + Email : string <<get>> <<set>>
+    + Password : string <<get>> <<set>>
+    + Name : string <<get>> <<set>>
+    + AverageGrade : double <<get>> <<set>>
+}
+class "UserManager`1"<T> {
+}
+ControllerBase <|-- UserController
+UserController --> "_userManager<ApplicationUser>" "UserManager`1"
+UserController --> "_studentService" StudentService
+CreateStudentModel --> "Specialty" Specialty
+CreateStudentModel --> "Faculty" Faculty
+CreateStudentModel --> "StudyYear" StudyYear
+@enduml

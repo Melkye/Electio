@@ -1,0 +1,362 @@
+@startuml
+class AuthorizeCheckOperationFilter {
+    + Apply(operation:OpenApiOperation, context:OperationFilterContext) : void
+}
+IOperationFilter <|-- AuthorizeCheckOperationFilter
+class "AddDbContext`1"<T> {
+}
+class "AddIdentity`2"<T1,T2> {
+}
+class "AddEntityFrameworkStores`1"<T> {
+}
+class "AddSingleton`1"<T> {
+}
+class "AddTransient`1"<T> {
+}
+class "OperationFilter`1"<T> {
+}
+class "GetRequiredService`1"<T> {
+}
+class "UserManager`1"<T> {
+}
+class "RoleManager`1"<T> {
+}
+class Generator <<static>> {
+    + {static} GenerateCoursesForStudyComponent(numberOfCourses:int, faculty:Faculty, specialties:List<Specialty>, studyComponent:StudyComponent, minQuota:int, maxQuota:int) : List<CourseCreateDTO>
+    + {static} GenerateStudentsForStudyYear(numberOfStudents:int, specialties:List<Specialty>, faculty:Faculty, studyYear:StudyYear, averageGradeMean:int, averageGradeStdDev:int) : List<StudentCreateDTO>
+    + {static} GenerateStudentPriorities(students:List<StudentGetDTO>, courses:List<CourseGetDTO>, isCloseToReal:bool) : List<StudentPrioritiesDTO>
+    + {static} GenerateStudentPriorities(student:StudentGetDTO, courses:List<CourseGetDTO>) : StudentPrioritiesDTO
+    + {static} GenerateStudentPrioritiesCloseToReal(student:StudentGetDTO, courses:List<CourseGetDTO>) : StudentPrioritiesDTO
+}
+class Helper <<static>> {
+    + {static} GetStudyComponentsAvailableToStudyYear(studyYear:StudyYear) : List<StudyComponent>
+    + {static} GetStudyYearByStudyComponent(studyComponent:StudyComponent) : StudyYear
+}
+class ElectioDbContext {
+    + ElectioDbContext(options:DbContextOptions<ElectioDbContext>)
+    # <<override>> OnModelCreating(modelBuilder:ModelBuilder) : void
+}
+class "IdentityDbContext`1"<T> {
+}
+class "DbSet`1"<T> {
+}
+"IdentityDbContext`1" "<ApplicationUser>" <|-- ElectioDbContext
+ElectioDbContext --> "Students<Student>" "DbSet`1"
+ElectioDbContext --> "Courses<Course>" "DbSet`1"
+ElectioDbContext --> "StudentsOnCourses<StudentOnCourse>" "DbSet`1"
+class UnitOfWork {
+    + UnitOfWork(context:ElectioDbContext)
+    + <<async>> SaveChangesAsync() : Task
+}
+UnitOfWork --> "_context" ElectioDbContext
+UnitOfWork --> "CourseRepository" CourseRepository
+UnitOfWork --> "StudentRepository" StudentRepository
+UnitOfWork --> "StudentOnCourseRepository" StudentOnCourseRepository
+class AuthController {
+    + AuthController(userManager:UserManager<ApplicationUser>, signInManager:SignInManager<ApplicationUser>, configuration:IConfiguration, studentService:StudentService)
+    + <<async>> Login(model:LoginModel) : Task<IActionResult>
+    - <<async>> GenerateJwtTokenAsync(user:ApplicationUser) : Task<string>
+}
+class LoginModel {
+    + Username : string <<get>> <<set>>
+    + Password : string <<get>> <<set>>
+}
+class "UserManager`1"<T> {
+}
+class "SignInManager`1"<T> {
+}
+ControllerBase <|-- AuthController
+AuthController --> "_userManager<ApplicationUser>" "UserManager`1"
+AuthController --> "_signInManager<ApplicationUser>" "SignInManager`1"
+AuthController --> "_configuration" IConfiguration
+AuthController --> "_studentService" StudentService
+class CoursesController {
+    + CoursesController(coursesService:CoursesService)
+    + <<async>> Get() : Task<IEnumerable<CourseGetDTO>>
+    + <<async>> Get(id:Guid) : Task<ActionResult<CourseGetDTO>>
+    + <<async>> PostAsync(dto:CourseCreateDTO) : Task<IActionResult>
+    + <<async>> PutAsync(id:Guid, dto:CourseCreateDTO) : Task<IActionResult>
+    + <<async>> DeleteAsync(id:Guid) : Task<IActionResult>
+    + <<async>> DeleteAsync() : Task<IActionResult>
+    + <<async>> PostManyRandomAsync() : Task<IEnumerable<CourseGetDTO>>
+    + GetEnrollment() : IEnumerable<CourseEnrollmentDTO>
+    + GetEnrollmentForCourse(id:Guid) : CourseEnrollmentDTO
+    + <<async>> UnenrollEveryone() : Task
+    + GetPlacementStatus() : bool
+    + <<async>> GetIdByTitle(title:string) : Task<Guid>
+    + GetPlacementEfficiency() : double
+    + <<async>> DeletePlacementsAsync() : Task<IActionResult>
+}
+ControllerBase <|-- CoursesController
+CoursesController --> "_coursesService" CoursesService
+class StudentsController {
+    + StudentsController(studentService:StudentService)
+    + <<async>> Get() : Task<IEnumerable<StudentGetDTO>>
+    + <<async>> Get(id:Guid) : Task<ActionResult<StudentGetDTO>>
+    + <<async>> GetStudentCourses(id:Guid) : Task<IEnumerable<CourseGetDTO>>
+    + <<async>> GetStudentPriorities(id:Guid) : Task<ActionResult<StudentPrioritiesDTO>>
+    + <<async>> SetStudentPriorities(id:Guid) : Task<IDictionary<StudyComponent, List<CourseGetDTO>>>
+    + <<async>> Post(studentDTO:StudentCreateDTO) : Task<ActionResult<StudentGetDTO>>
+    + <<async>> PostStudents() : Task<IEnumerable<StudentGetDTO>>
+    + <<async>> SetRandomPriorities() : Task<IEnumerable<IEnumerable<StudentOnCourse>>>
+    + <<async>> SetCloseToRealPriorities() : Task<IEnumerable<IEnumerable<StudentOnCourse>>>
+    + <<async>> SetStudentPriorities(dto:StudentPrioritiesDTO) : Task<IEnumerable<StudentOnCourse>>
+    + <<async>> ExecuteGradeBiasedPlacement() : Task<IEnumerable<StudentGetDTO>>
+    + <<async>> ExecuteTimeBiasedPlacement() : Task<IEnumerable<StudentGetDTO>>
+    + <<async>> DeleteAsync() : Task<IActionResult>
+}
+ControllerBase <|-- StudentsController
+StudentsController --> "_studentService" StudentService
+class UserController {
+    + UserController(userManager:UserManager<ApplicationUser>, studentService:StudentService)
+    + <<async>> CreateStudent(model:CreateStudentModel) : Task<IActionResult>
+}
+class CreateStudentModel {
+    + Username : string <<get>> <<set>>
+    + Email : string <<get>> <<set>>
+    + Password : string <<get>> <<set>>
+    + Name : string <<get>> <<set>>
+    + AverageGrade : double <<get>> <<set>>
+}
+class "UserManager`1"<T> {
+}
+ControllerBase <|-- UserController
+UserController --> "_userManager<ApplicationUser>" "UserManager`1"
+UserController --> "_studentService" StudentService
+CreateStudentModel --> "Specialty" Specialty
+CreateStudentModel --> "Faculty" Faculty
+CreateStudentModel --> "StudyYear" StudyYear
+class CourseCreateDTO {
+    + Title : string <<get>> <<set>>
+    + Quota : int <<get>> <<set>>
+}
+class "List`1"<T> {
+}
+CourseCreateDTO o-> "Specialties<Specialty>" "List`1"
+CourseCreateDTO --> "Faculty" Faculty
+CourseCreateDTO --> "StudyComponent" StudyComponent
+class CourseEnrollmentDTO {
+    + Title : string <<get>> <<set>>
+}
+class "IEnumerable`1"<T> {
+}
+CourseEnrollmentDTO o-> "Students<StudentGetDTO>" "IEnumerable`1"
+class CourseGetDTO {
+    + Title : string <<get>> <<set>>
+    + Quota : int <<get>> <<set>>
+}
+class "List`1"<T> {
+}
+CourseGetDTO --> "Id" Guid
+CourseGetDTO o-> "Specialties<Specialty>" "List`1"
+CourseGetDTO --> "Faculty" Faculty
+CourseGetDTO --> "StudyComponent" StudyComponent
+class StudentCreateDTO {
+    + Name : string <<get>> <<set>>
+    + AverageGrade : double <<get>> <<set>>
+}
+StudentCreateDTO --> "Specialty" Specialty
+StudentCreateDTO --> "Faculty" Faculty
+StudentCreateDTO --> "StudyYear" StudyYear
+class StudentGetDTO {
+    + Name : string <<get>> <<set>>
+    + AverageGrade : double <<get>> <<set>>
+}
+StudentGetDTO --> "Id" Guid
+StudentGetDTO --> "Specialty" Specialty
+StudentGetDTO --> "Faculty" Faculty
+StudentGetDTO --> "StudyYear" StudyYear
+class StudentPrioritiesDTO {
+    + StudentName : string <<get>> <<set>>
+}
+class "Dictionary`2"<T1,T2> {
+}
+StudentPrioritiesDTO o-> "CoursesPriorities<StudyComponent,Dictionary<string, int>>" "Dictionary`2"
+class AutoMapperProfile {
+    + AutoMapperProfile()
+}
+Profile <|-- AutoMapperProfile
+class CoursesService {
+    + CoursesService(mapper:IMapper, unitOfWork:UnitOfWork)
+    + <<async>> CreateRandomCoursesAsync() : Task
+    + <<async>> CreateAsync(dto:CourseCreateDTO) : Task<CourseGetDTO>
+    + <<async>> UpdateAsync(id:Guid, dto:CourseCreateDTO) : Task<CourseGetDTO>
+    + <<async>> DeleteAsync(id:Guid) : Task
+    + <<async>> GetAllAsync() : Task<IEnumerable<CourseGetDTO>>
+    + <<async>> GetByIdAsync(id:Guid) : Task<CourseGetDTO>
+    + GetStudentsPerCourse() : IEnumerable<CourseEnrollmentDTO>
+    + GetStudentsPerCourse(courseId:Guid) : CourseEnrollmentDTO
+    + <<async>> UnenrollEveryone() : Task
+    + <<async>> DeletePlacementsAsync() : Task
+    + <<async>> GetCourseIdByTitleAsync(title:string) : Task<Guid>
+    + GetPlacementEfficiency() : double
+    + <<async>> DeleteAsync() : Task
+}
+CoursesService --> "_mapper" IMapper
+CoursesService --> "_unitOfWork" UnitOfWork
+class StudentService {
+    + StudentService(mapper:IMapper, unitOfWork:UnitOfWork)
+    + <<async>> CreateAsync(dto:StudentCreateDTO) : Task<StudentGetDTO>
+    + <<async>> CreateRandomStudentsAsync() : Task
+    + <<async>> SetPriorities(dto:StudentPrioritiesDTO) : Task<List<StudentOnCourse>>
+    + <<async>> SetRandomPriorities(isCloseToReal:bool) : Task<IEnumerable<IEnumerable<StudentOnCourse>>>
+    + <<async>> GetAllAsync() : Task<IEnumerable<StudentGetDTO>>
+    + <<async>> GetByIdAsync(id:Guid) : Task<StudentGetDTO>
+    + <<async>> ExecuteGradeBiasedPlacement(studyComponent:StudyComponent) : Task
+    + <<async>> ExecuteTimeBiasedPlacement(studyComponent:StudyComponent) : Task
+    + <<async>> GetStudentCoursesAsync(studentId:Guid) : Task<IEnumerable<CourseGetDTO>>
+    + <<async>> GetStudentPrioritiesAsync(studentId:Guid) : Task<StudentPrioritiesDTO>
+    + <<async>> GetAvailableCourses(id:Guid) : Task<IDictionary<StudyComponent, List<CourseGetDTO>>>
+    + <<async>> DeleteAsync() : Task
+}
+StudentService --> "_mapper" IMapper
+StudentService --> "_unitOfWork" UnitOfWork
+class Course {
+    + Title : string <<get>> <<set>>
+    + Quota : int <<get>> <<set>>
+}
+class "List`1"<T> {
+}
+Course --> "Id" Guid
+Course o-> "Specialties<Specialty>" "List`1"
+Course --> "Faculty" Faculty
+Course --> "StudyComponent" StudyComponent
+class CourseEnrollment {
+    + Title : string <<get>> <<set>>
+    + Quota : int <<get>> <<set>>
+}
+class "IEnumerable`1"<T> {
+}
+CourseEnrollment o-> "Students<Student>" "IEnumerable`1"
+class Student {
+    + Name : string <<get>> <<set>>
+    + AverageGrade : double <<get>> <<set>>
+    + Group : string <<get>> <<set>>
+}
+Student --> "Id" Guid
+Student --> "Specialty" Specialty
+Student --> "Faculty" Faculty
+Student --> "StudyYear" StudyYear
+class StudentOnCourse {
+    + Priority : int <<get>> <<set>>
+    + IsEnrolled : bool <<get>> <<set>> = false
+    + IsChecked : bool <<get>> <<set>> = false
+}
+StudentOnCourse --> "Id" Guid
+StudentOnCourse --> "StudentId" Guid
+StudentOnCourse --> "CourseId" Guid
+class StudentPriorities {
+    + StudentName : string <<get>> <<set>>
+}
+class "Dictionary`2"<T1,T2> {
+}
+StudentPriorities o-> "CoursesPriorities<StudyComponent,Dictionary<string, int>>" "Dictionary`2"
+enum StudyComponent {
+    SK1= 1,
+    SK2= 2,
+    SK3= 3,
+    SK4= 4,
+    SK5= 5,
+    SK6= 6,
+    SK7= 7,
+    SK8= 8,
+    SK9= 9,
+    SK10= 10,
+    SK11= 11,
+    SK12= 12,
+    SK13= 13,
+    SK14= 14,
+}
+enum Faculty {
+    FICE= 1,
+    IASA= 0,
+}
+enum Specialty {
+    IT121= 121,
+    IT122= 122,
+    IT123= 123,
+    IT124= 124,
+    IT125= 125,
+    IT126= 126,
+}
+enum StudyYear {
+    First= 1,
+    Second= 2,
+    Third= 3,
+    Fifth= 5,
+}
+class ApplicationUser {
+    + Name : string <<get>> <<set>>
+}
+IdentityUser <|-- ApplicationUser
+class InitialCreate <<partial>> {
+    # <<override>> Up(migrationBuilder:MigrationBuilder) : void
+    # <<override>> Down(migrationBuilder:MigrationBuilder) : void
+}
+Migration <|-- InitialCreate
+class InitialCreate <<partial>> {
+    # <<override>> BuildTargetModel(modelBuilder:ModelBuilder) : void
+}
+class UpdateDbStructureToMoreRealistic <<partial>> {
+    # <<override>> Up(migrationBuilder:MigrationBuilder) : void
+    # <<override>> Down(migrationBuilder:MigrationBuilder) : void
+}
+Migration <|-- UpdateDbStructureToMoreRealistic
+class UpdateDbStructureToMoreRealistic <<partial>> {
+    # <<override>> BuildTargetModel(modelBuilder:ModelBuilder) : void
+}
+class AddIdentity <<partial>> {
+    # <<override>> Up(migrationBuilder:MigrationBuilder) : void
+    # <<override>> Down(migrationBuilder:MigrationBuilder) : void
+}
+Migration <|-- AddIdentity
+class AddIdentity <<partial>> {
+    # <<override>> BuildTargetModel(modelBuilder:ModelBuilder) : void
+}
+class ElectioDbContextModelSnapshot <<partial>> {
+    # <<override>> BuildModel(modelBuilder:ModelBuilder) : void
+}
+ModelSnapshot <|-- ElectioDbContextModelSnapshot
+class CourseRepository {
+    + CourseRepository(context:ElectioDbContext)
+    + <<async>> GetAllAsync() : Task<IEnumerable<Course>>
+    + <<async>> GetByIdAsync(id:Guid) : Task<Course>
+    + <<async>> CreateAsync(course:Course) : Task<Course>
+    + <<async>> UpdateAsync(id:Guid, course:Course) : Task<Course>
+    + <<async>> CreateCoursesAsync(courses:IEnumerable<Course>) : Task
+    + <<async>> UpdateCourseAsync(course:Course) : Task<Course>
+    + <<async>> DeleteAsync(id:Guid) : Task
+    + <<async>> DeleteAsync() : Task
+    + GetStudentsPerCourse() : IEnumerable<CourseEnrollment>
+    + GetStudentsPerCourse(courseId:Guid) : CourseEnrollment
+    + <<async>> GetCourseIdByTitleAsync(title:string) : Task<Guid>
+    + GetPlacementEfficiency() : double
+}
+CourseRepository --> "_context" ElectioDbContext
+class StudentOnCourseRepository {
+    + StudentOnCourseRepository(context:ElectioDbContext)
+    + <<async>> GetEnrolledCoursesByStudentIdAsync(studentId:Guid) : Task<IEnumerable<Course>>
+    + <<async>> GetCoursesWithPrioritiesByStudentIdAsync(studentId:Guid, studyComponent:StudyComponent) : Task<IEnumerable<StudentOnCourse>>
+    + <<async>> AddCoursePriorityToStudent(studentId:Guid, courseId:Guid, priority:int) : Task<StudentOnCourse>
+    + <<async>> AddCoursePriorityToStudent(studentId:Guid, courseTitle:string, priority:int) : Task<StudentOnCourse>
+    + <<async>> GetStudentsByCourseIdAsync(courseId:Guid) : Task<IEnumerable<Student>>
+    + <<async>> AddStudentToCourseAsync(studentId:Guid, courseId:Guid) : Task<StudentOnCourse>
+    + <<async>> RemoveStudentFromCourseAsync(studentId:Guid, courseId:Guid) : Task<StudentOnCourse>
+    + <<async>> MarkCourseAsChecked(studentId:Guid, courseId:Guid) : Task<StudentOnCourse>
+    + <<async>> UnenrollEveryone() : Task
+    + <<async>> DeleteAsync() : Task
+}
+StudentOnCourseRepository --> "_context" ElectioDbContext
+class StudentRepository {
+    + StudentRepository(context:ElectioDbContext)
+    + <<async>> GetAllAsync() : Task<IEnumerable<Student>>
+    + <<async>> GetByIdAsync(id:Guid) : Task<Student>
+    + <<async>> CreateStudentAsync(student:Student) : Task<Student>
+    + <<async>> CreateStudentsAsync(students:IEnumerable<Student>) : Task
+    + <<async>> UpdateStudentAsync(student:Student) : Task<Student>
+    + <<async>> DeleteStudentAsync(id:Guid) : Task
+    + GetStudentsPerCourse() : IEnumerable<CourseEnrollment>
+    + <<async>> DeleteAsync() : Task
+}
+StudentRepository --> "_context" ElectioDbContext
+@enduml

@@ -1,0 +1,12 @@
+@startuml
+class CourseGetDTO {
+    + Title : string <<get>> <<set>>
+    + Quota : int <<get>> <<set>>
+}
+class "List`1"<T> {
+}
+CourseGetDTO --> "Id" Guid
+CourseGetDTO o-> "Specialties<Specialty>" "List`1"
+CourseGetDTO --> "Faculty" Faculty
+CourseGetDTO --> "StudyComponent" StudyComponent
+@enduml

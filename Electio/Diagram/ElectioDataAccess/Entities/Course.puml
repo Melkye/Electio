@@ -1,0 +1,12 @@
+@startuml
+class Course {
+    + Title : string <<get>> <<set>>
+    + Quota : int <<get>> <<set>>
+}
+class "List`1"<T> {
+}
+Course --> "Id" Guid
+Course o-> "Specialties<Specialty>" "List`1"
+Course --> "Faculty" Faculty
+Course --> "StudyComponent" StudyComponent
+@enduml

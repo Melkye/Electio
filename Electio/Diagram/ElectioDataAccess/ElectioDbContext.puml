@@ -1,0 +1,14 @@
+@startuml
+class ElectioDbContext {
+    + ElectioDbContext(options:DbContextOptions<ElectioDbContext>)
+    # <<override>> OnModelCreating(modelBuilder:ModelBuilder) : void
+}
+class "IdentityDbContext`1"<T> {
+}
+class "DbSet`1"<T> {
+}
+"IdentityDbContext`1" "<ApplicationUser>" <|-- ElectioDbContext
+ElectioDbContext --> "Students<Student>" "DbSet`1"
+ElectioDbContext --> "Courses<Course>" "DbSet`1"
+ElectioDbContext --> "StudentsOnCourses<StudentOnCourse>" "DbSet`1"
+@enduml

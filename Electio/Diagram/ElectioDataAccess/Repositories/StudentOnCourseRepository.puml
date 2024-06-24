@@ -1,0 +1,16 @@
+@startuml
+class StudentOnCourseRepository {
+    + StudentOnCourseRepository(context:ElectioDbContext)
+    + <<async>> GetEnrolledCoursesByStudentIdAsync(studentId:Guid) : Task<IEnumerable<Course>>
+    + <<async>> GetCoursesWithPrioritiesByStudentIdAsync(studentId:Guid, studyComponent:StudyComponent) : Task<IEnumerable<StudentOnCourse>>
+    + <<async>> AddCoursePriorityToStudent(studentId:Guid, courseId:Guid, priority:int) : Task<StudentOnCourse>
+    + <<async>> AddCoursePriorityToStudent(studentId:Guid, courseTitle:string, priority:int) : Task<StudentOnCourse>
+    + <<async>> GetStudentsByCourseIdAsync(courseId:Guid) : Task<IEnumerable<Student>>
+    + <<async>> AddStudentToCourseAsync(studentId:Guid, courseId:Guid) : Task<StudentOnCourse>
+    + <<async>> RemoveStudentFromCourseAsync(studentId:Guid, courseId:Guid) : Task<StudentOnCourse>
+    + <<async>> MarkCourseAsChecked(studentId:Guid, courseId:Guid) : Task<StudentOnCourse>
+    + <<async>> UnenrollEveryone() : Task
+    + <<async>> DeleteAsync() : Task
+}
+StudentOnCourseRepository --> "_context" ElectioDbContext
+@enduml

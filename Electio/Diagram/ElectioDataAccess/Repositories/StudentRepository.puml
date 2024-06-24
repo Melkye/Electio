@@ -1,0 +1,14 @@
+@startuml
+class StudentRepository {
+    + StudentRepository(context:ElectioDbContext)
+    + <<async>> GetAllAsync() : Task<IEnumerable<Student>>
+    + <<async>> GetByIdAsync(id:Guid) : Task<Student>
+    + <<async>> CreateStudentAsync(student:Student) : Task<Student>
+    + <<async>> CreateStudentsAsync(students:IEnumerable<Student>) : Task
+    + <<async>> UpdateStudentAsync(student:Student) : Task<Student>
+    + <<async>> DeleteStudentAsync(id:Guid) : Task
+    + GetStudentsPerCourse() : IEnumerable<CourseEnrollment>
+    + <<async>> DeleteAsync() : Task
+}
+StudentRepository --> "_context" ElectioDbContext
+@enduml

@@ -1,0 +1,10 @@
+@startuml
+class StudentGetDTO {
+    + Name : string <<get>> <<set>>
+    + AverageGrade : double <<get>> <<set>>
+}
+StudentGetDTO --> "Id" Guid
+StudentGetDTO --> "Specialty" Specialty
+StudentGetDTO --> "Faculty" Faculty
+StudentGetDTO --> "StudyYear" StudyYear
+@enduml

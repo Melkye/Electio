@@ -1,0 +1,10 @@
+@startuml
+class UnitOfWork {
+    + UnitOfWork(context:ElectioDbContext)
+    + <<async>> SaveChangesAsync() : Task
+}
+UnitOfWork --> "_context" ElectioDbContext
+UnitOfWork --> "CourseRepository" CourseRepository
+UnitOfWork --> "StudentRepository" StudentRepository
+UnitOfWork --> "StudentOnCourseRepository" StudentOnCourseRepository
+@enduml

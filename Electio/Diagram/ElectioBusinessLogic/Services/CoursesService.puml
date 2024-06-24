@@ -1,0 +1,20 @@
+@startuml
+class CoursesService {
+    + CoursesService(mapper:IMapper, unitOfWork:UnitOfWork)
+    + <<async>> CreateRandomCoursesAsync() : Task
+    + <<async>> CreateAsync(dto:CourseCreateDTO) : Task<CourseGetDTO>
+    + <<async>> UpdateAsync(id:Guid, dto:CourseCreateDTO) : Task<CourseGetDTO>
+    + <<async>> DeleteAsync(id:Guid) : Task
+    + <<async>> GetAllAsync() : Task<IEnumerable<CourseGetDTO>>
+    + <<async>> GetByIdAsync(id:Guid) : Task<CourseGetDTO>
+    + GetStudentsPerCourse() : IEnumerable<CourseEnrollmentDTO>
+    + GetStudentsPerCourse(courseId:Guid) : CourseEnrollmentDTO
+    + <<async>> UnenrollEveryone() : Task
+    + <<async>> DeletePlacementsAsync() : Task
+    + <<async>> GetCourseIdByTitleAsync(title:string) : Task<Guid>
+    + GetPlacementEfficiency() : double
+    + <<async>> DeleteAsync() : Task
+}
+CoursesService --> "_mapper" IMapper
+CoursesService --> "_unitOfWork" UnitOfWork
+@enduml

@@ -1,0 +1,20 @@
+@startuml
+class StudentsController {
+    + StudentsController(studentService:StudentService)
+    + <<async>> Get() : Task<IEnumerable<StudentGetDTO>>
+    + <<async>> Get(id:Guid) : Task<ActionResult<StudentGetDTO>>
+    + <<async>> GetStudentCourses(id:Guid) : Task<IEnumerable<CourseGetDTO>>
+    + <<async>> GetStudentPriorities(id:Guid) : Task<ActionResult<StudentPrioritiesDTO>>
+    + <<async>> SetStudentPriorities(id:Guid) : Task<IDictionary<StudyComponent, List<CourseGetDTO>>>
+    + <<async>> Post(studentDTO:StudentCreateDTO) : Task<ActionResult<StudentGetDTO>>
+    + <<async>> PostStudents() : Task<IEnumerable<StudentGetDTO>>
+    + <<async>> SetRandomPriorities() : Task<IEnumerable<IEnumerable<StudentOnCourse>>>
+    + <<async>> SetCloseToRealPriorities() : Task<IEnumerable<IEnumerable<StudentOnCourse>>>
+    + <<async>> SetStudentPriorities(dto:StudentPrioritiesDTO) : Task<IEnumerable<StudentOnCourse>>
+    + <<async>> ExecuteGradeBiasedPlacement() : Task<IEnumerable<StudentGetDTO>>
+    + <<async>> ExecuteTimeBiasedPlacement() : Task<IEnumerable<StudentGetDTO>>
+    + <<async>> DeleteAsync() : Task<IActionResult>
+}
+ControllerBase <|-- StudentsController
+StudentsController --> "_studentService" StudentService
+@enduml

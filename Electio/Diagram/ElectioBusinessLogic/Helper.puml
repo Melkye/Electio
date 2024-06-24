@@ -1,0 +1,6 @@
+@startuml
+class Helper <<static>> {
+    + {static} GetStudyComponentsAvailableToStudyYear(studyYear:StudyYear) : List<StudyComponent>
+    + {static} GetStudyYearByStudyComponent(studyComponent:StudyComponent) : StudyYear
+}
+@enduml

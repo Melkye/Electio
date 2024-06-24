@@ -1,0 +1,10 @@
+@startuml
+enum Specialty {
+    IT121= 121,
+    IT122= 122,
+    IT123= 123,
+    IT124= 124,
+    IT125= 125,
+    IT126= 126,
+}
+@enduml

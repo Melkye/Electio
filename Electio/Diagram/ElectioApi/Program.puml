@@ -1,0 +1,20 @@
+@startuml
+class "AddDbContext`1"<T> {
+}
+class "AddIdentity`2"<T1,T2> {
+}
+class "AddEntityFrameworkStores`1"<T> {
+}
+class "AddSingleton`1"<T> {
+}
+class "AddTransient`1"<T> {
+}
+class "OperationFilter`1"<T> {
+}
+class "GetRequiredService`1"<T> {
+}
+class "UserManager`1"<T> {
+}
+class "RoleManager`1"<T> {
+}
+@enduml

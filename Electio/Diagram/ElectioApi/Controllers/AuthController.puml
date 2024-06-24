@@ -1,0 +1,20 @@
+@startuml
+class AuthController {
+    + AuthController(userManager:UserManager<ApplicationUser>, signInManager:SignInManager<ApplicationUser>, configuration:IConfiguration, studentService:StudentService)
+    + <<async>> Login(model:LoginModel) : Task<IActionResult>
+    - <<async>> GenerateJwtTokenAsync(user:ApplicationUser) : Task<string>
+}
+class LoginModel {
+    + Username : string <<get>> <<set>>
+    + Password : string <<get>> <<set>>
+}
+class "UserManager`1"<T> {
+}
+class "SignInManager`1"<T> {
+}
+ControllerBase <|-- AuthController
+AuthController --> "_userManager<ApplicationUser>" "UserManager`1"
+AuthController --> "_signInManager<ApplicationUser>" "SignInManager`1"
+AuthController --> "_configuration" IConfiguration
+AuthController --> "_studentService" StudentService
+@enduml

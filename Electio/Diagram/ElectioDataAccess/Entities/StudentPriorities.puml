@@ -1,0 +1,8 @@
+@startuml
+class StudentPriorities {
+    + StudentName : string <<get>> <<set>>
+}
+class "Dictionary`2"<T1,T2> {
+}
+StudentPriorities o-> "CoursesPriorities<StudyComponent,Dictionary<string, int>>" "Dictionary`2"
+@enduml

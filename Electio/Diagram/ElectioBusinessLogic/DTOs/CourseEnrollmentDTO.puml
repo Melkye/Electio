@@ -1,0 +1,8 @@
+@startuml
+class CourseEnrollmentDTO {
+    + Title : string <<get>> <<set>>
+}
+class "IEnumerable`1"<T> {
+}
+CourseEnrollmentDTO o-> "Students<StudentGetDTO>" "IEnumerable`1"
+@enduml

@@ -1,0 +1,9 @@
+@startuml
+class StudentCreateDTO {
+    + Name : string <<get>> <<set>>
+    + AverageGrade : double <<get>> <<set>>
+}
+StudentCreateDTO --> "Specialty" Specialty
+StudentCreateDTO --> "Faculty" Faculty
+StudentCreateDTO --> "StudyYear" StudyYear
+@enduml

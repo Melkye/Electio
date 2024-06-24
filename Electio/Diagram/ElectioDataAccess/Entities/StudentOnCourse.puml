@@ -1,0 +1,10 @@
+@startuml
+class StudentOnCourse {
+    + Priority : int <<get>> <<set>>
+    + IsEnrolled : bool <<get>> <<set>> = false
+    + IsChecked : bool <<get>> <<set>> = false
+}
+StudentOnCourse --> "Id" Guid
+StudentOnCourse --> "StudentId" Guid
+StudentOnCourse --> "CourseId" Guid
+@enduml

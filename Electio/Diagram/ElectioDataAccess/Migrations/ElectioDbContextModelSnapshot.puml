@@ -1,0 +1,6 @@
+@startuml
+class ElectioDbContextModelSnapshot <<partial>> {
+    # <<override>> BuildModel(modelBuilder:ModelBuilder) : void
+}
+ModelSnapshot <|-- ElectioDbContextModelSnapshot
+@enduml

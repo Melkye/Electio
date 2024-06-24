@@ -1,0 +1,6 @@
+@startuml
+class AuthorizeCheckOperationFilter {
+    + Apply(operation:OpenApiOperation, context:OperationFilterContext) : void
+}
+IOperationFilter <|-- AuthorizeCheckOperationFilter
+@enduml

@@ -1,0 +1,11 @@
+@startuml
+class Student {
+    + Name : string <<get>> <<set>>
+    + AverageGrade : double <<get>> <<set>>
+    + Group : string <<get>> <<set>>
+}
+Student --> "Id" Guid
+Student --> "Specialty" Specialty
+Student --> "Faculty" Faculty
+Student --> "StudyYear" StudyYear
+@enduml

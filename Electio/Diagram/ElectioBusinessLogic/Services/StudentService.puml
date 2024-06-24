@@ -1,0 +1,19 @@
+@startuml
+class StudentService {
+    + StudentService(mapper:IMapper, unitOfWork:UnitOfWork)
+    + <<async>> CreateAsync(dto:StudentCreateDTO) : Task<StudentGetDTO>
+    + <<async>> CreateRandomStudentsAsync() : Task
+    + <<async>> SetPriorities(dto:StudentPrioritiesDTO) : Task<List<StudentOnCourse>>
+    + <<async>> SetRandomPriorities(isCloseToReal:bool) : Task<IEnumerable<IEnumerable<StudentOnCourse>>>
+    + <<async>> GetAllAsync() : Task<IEnumerable<StudentGetDTO>>
+    + <<async>> GetByIdAsync(id:Guid) : Task<StudentGetDTO>
+    + <<async>> ExecuteGradeBiasedPlacement(studyComponent:StudyComponent) : Task
+    + <<async>> ExecuteTimeBiasedPlacement(studyComponent:StudyComponent) : Task
+    + <<async>> GetStudentCoursesAsync(studentId:Guid) : Task<IEnumerable<CourseGetDTO>>
+    + <<async>> GetStudentPrioritiesAsync(studentId:Guid) : Task<StudentPrioritiesDTO>
+    + <<async>> GetAvailableCourses(id:Guid) : Task<IDictionary<StudyComponent, List<CourseGetDTO>>>
+    + <<async>> DeleteAsync() : Task
+}
+StudentService --> "_mapper" IMapper
+StudentService --> "_unitOfWork" UnitOfWork
+@enduml

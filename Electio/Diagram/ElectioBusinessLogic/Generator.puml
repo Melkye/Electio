@@ -1,0 +1,9 @@
+@startuml
+class Generator <<static>> {
+    + {static} GenerateCoursesForStudyComponent(numberOfCourses:int, faculty:Faculty, specialties:List<Specialty>, studyComponent:StudyComponent, minQuota:int, maxQuota:int) : List<CourseCreateDTO>
+    + {static} GenerateStudentsForStudyYear(numberOfStudents:int, specialties:List<Specialty>, faculty:Faculty, studyYear:StudyYear, averageGradeMean:int, averageGradeStdDev:int) : List<StudentCreateDTO>
+    + {static} GenerateStudentPriorities(students:List<StudentGetDTO>, courses:List<CourseGetDTO>, isCloseToReal:bool) : List<StudentPrioritiesDTO>
+    + {static} GenerateStudentPriorities(student:StudentGetDTO, courses:List<CourseGetDTO>) : StudentPrioritiesDTO
+    + {static} GenerateStudentPrioritiesCloseToReal(student:StudentGetDTO, courses:List<CourseGetDTO>) : StudentPrioritiesDTO
+}
+@enduml

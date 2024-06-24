@@ -1,0 +1,6 @@
+@startuml
+enum Faculty {
+    FICE= 1,
+    IASA= 0,
+}
+@enduml

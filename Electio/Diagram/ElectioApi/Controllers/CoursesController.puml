@@ -1,0 +1,21 @@
+@startuml
+class CoursesController {
+    + CoursesController(coursesService:CoursesService)
+    + <<async>> Get() : Task<IEnumerable<CourseGetDTO>>
+    + <<async>> Get(id:Guid) : Task<ActionResult<CourseGetDTO>>
+    + <<async>> PostAsync(dto:CourseCreateDTO) : Task<IActionResult>
+    + <<async>> PutAsync(id:Guid, dto:CourseCreateDTO) : Task<IActionResult>
+    + <<async>> DeleteAsync(id:Guid) : Task<IActionResult>
+    + <<async>> DeleteAsync() : Task<IActionResult>
+    + <<async>> PostManyRandomAsync() : Task<IEnumerable<CourseGetDTO>>
+    + GetEnrollment() : IEnumerable<CourseEnrollmentDTO>
+    + GetEnrollmentForCourse(id:Guid) : CourseEnrollmentDTO
+    + <<async>> UnenrollEveryone() : Task
+    + GetPlacementStatus() : bool
+    + <<async>> GetIdByTitle(title:string) : Task<Guid>
+    + GetPlacementEfficiency() : double
+    + <<async>> DeletePlacementsAsync() : Task<IActionResult>
+}
+ControllerBase <|-- CoursesController
+CoursesController --> "_coursesService" CoursesService
+@enduml

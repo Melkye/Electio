@@ -1,0 +1,18 @@
+@startuml
+class CourseRepository {
+    + CourseRepository(context:ElectioDbContext)
+    + <<async>> GetAllAsync() : Task<IEnumerable<Course>>
+    + <<async>> GetByIdAsync(id:Guid) : Task<Course>
+    + <<async>> CreateAsync(course:Course) : Task<Course>
+    + <<async>> UpdateAsync(id:Guid, course:Course) : Task<Course>
+    + <<async>> CreateCoursesAsync(courses:IEnumerable<Course>) : Task
+    + <<async>> UpdateCourseAsync(course:Course) : Task<Course>
+    + <<async>> DeleteAsync(id:Guid) : Task
+    + <<async>> DeleteAsync() : Task
+    + GetStudentsPerCourse() : IEnumerable<CourseEnrollment>
+    + GetStudentsPerCourse(courseId:Guid) : CourseEnrollment
+    + <<async>> GetCourseIdByTitleAsync(title:string) : Task<Guid>
+    + GetPlacementEfficiency() : double
+}
+CourseRepository --> "_context" ElectioDbContext
+@enduml
