@@ -11,7 +11,7 @@
           <mat-card-subtitle>Максимальна кількість студентів на дисципліні: {{ course?.quota}}</mat-card-subtitle>
           <mat-card-subtitle>Викладається для спеціальностей: {{ course?.specialties}}</mat-card-subtitle>
           <!-- TODO: add studyYear to course entity -->
-          <mat-card-subtitle>Курс (Поки що освітній компонент): {{ course?.studyComponent}}</mat-card-subtitle>
+          <mat-card-subtitle>Освітній компонент: {{ course?.studyComponent}}</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
           <div *ngIf="students.length == 0">

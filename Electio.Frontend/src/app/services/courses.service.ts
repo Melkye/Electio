@@ -89,8 +89,8 @@ export class CoursesService {
     return this.http.get<boolean>(`${this.apiUrl}/placement-status`);
   }
 
-  getPlacementEficiency(): Observable<string> {
-    return this.http.get<string>(`${this.apiUrl}/placement-efficiency`);
+  getPlacementEficiency(algorithmName: string): Observable<string> {
+    return this.http.get<string>(`${this.apiUrl}/placement-efficiency/{algorithmName}`);
   }
 
   setRandomPriorities(): Observable<void> {

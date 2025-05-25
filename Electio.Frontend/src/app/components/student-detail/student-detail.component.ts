@@ -14,12 +14,12 @@ import { AuthService } from '../../services/auth.service';
 export class StudentDetailComponent implements OnInit {
 
   student: Student = { 
-    id: 'abubaId', 
-    name: 'abubaName', 
-    averageGrade: 10000,
-    faculty: 1000, //'abuba',
-    specialty: 1000, //'abuba',
-    studyYear: 10000
+    id: '', 
+    name: '', 
+    averageGrade: 0,
+    faculty: 0, //'abuba',
+    specialty: 0, //'abuba',
+    studyYear: 0
   };
 
   isPlacementExecuted = false;
@@ -182,6 +182,16 @@ export class StudentDetailComponent implements OnInit {
 
   generatePriorityOptions(numOptions: number): number[] {
     return Array.from({ length: numOptions }, (_, index) => index + 1);
+  }
+
+  getFacultyName(number: number): string {
+    if (number === 1) {
+      return 'ФІОТ';
+    } else if (number === 2) {
+      return 'ІПСА';
+    } else {
+      return 'Unknown Faculty';
+    }
   }
 }
 

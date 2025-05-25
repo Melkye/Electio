@@ -3,6 +3,7 @@ using AutoMapper;
 using Electio.BusinessLogic.DTOs;
 using Electio.DataAccess;
 using Electio.DataAccess.Entities;
+using Electio.DataAccess.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Electio.BusinessLogic.Services;
@@ -23,22 +24,28 @@ public class CoursesService
     {
         if (!(await _unitOfWork.CourseRepository.GetAllAsync()).Any())
         {
-            var coursesSK1 = _mapper.Map<IEnumerable<Course>>(
-                Generator.GenerateCoursesForStudyComponent(studyComponent: StudyComponent.SK1));
+            var studyYears = Enum.GetValues<StudyYear>();
 
-            var coursesSK2 = _mapper.Map<IEnumerable<Course>>(
-                Generator.GenerateCoursesForStudyComponent(studyComponent: StudyComponent.SK2));
+            var courses = new List<Course>();
 
-            var coursesSK3 = _mapper.Map<IEnumerable<Course>>(
-                Generator.GenerateCoursesForStudyComponent(studyComponent: StudyComponent.SK3));
+            foreach (var studyYear in studyYears)
+            {
+                var studyComponents = Helper.GetStudyComponentsAvailableToStudyYear(studyYear);
 
-            var coursesSK4 = _mapper.Map<IEnumerable<Course>>(
-                Generator.GenerateCoursesForStudyComponent(studyComponent: StudyComponent.SK4));
+                var numberOfStudentsForStudyYear = (await _unitOfWork.StudentRepository.GetAllAsync())
+                    .Where(s => s.StudyYear == studyYear).Count();
 
-            await _unitOfWork.CourseRepository.CreateCoursesAsync(
-                coursesSK1.Union(coursesSK2).Union(coursesSK3).Union(coursesSK4));
+                foreach (var studyComponent in studyComponents)
+                {
+                    courses.AddRange(_mapper.Map<IEnumerable<Course>>(
+                                           Generator.GenerateCoursesForStudyComponent(
+                                               studyComponent: studyComponent,
+                                               numberOfStudents: numberOfStudentsForStudyYear)));
+
+                }
+            }
+            await _unitOfWork.CourseRepository.CreateCoursesAsync(courses);
         }
-
         await _unitOfWork.SaveChangesAsync();
     }
 

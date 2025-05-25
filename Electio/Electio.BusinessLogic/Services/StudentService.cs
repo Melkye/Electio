@@ -38,14 +38,14 @@ public class StudentService
         //var createdStudents = new List<StudentGetDTO>();
         if (!(await _unitOfWork.StudentRepository.GetAllAsync()).Any())
         {
-            var studentsFirstStudyYear = _mapper.Map<IEnumerable<Student>>(
-                Generator.GenerateStudentsForStudyYear(studyYear: StudyYear.First));
+            var students = new List<Student>();
+            foreach (var studyYear in Enum.GetValues<StudyYear>())
+            {
+                students.AddRange(_mapper.Map<IEnumerable<Student>>(
+                                       Generator.GenerateStudentsForStudyYear(studyYear: studyYear)));
+            }
 
-            var studentsSecondStudyYear = _mapper.Map<IEnumerable<Student>>(
-                Generator.GenerateStudentsForStudyYear(studyYear: StudyYear.Second));
-
-            await _unitOfWork.StudentRepository.CreateStudentsAsync(
-                studentsFirstStudyYear.Union(studentsSecondStudyYear));
+            await _unitOfWork.StudentRepository.CreateStudentsAsync(students);
         }
 
         await _unitOfWork.SaveChangesAsync();
@@ -120,11 +120,11 @@ public class StudentService
         // NOTE: consider ordering from lowest to highest to remove at last pos
         //public List<Course> GradeBasedPlacement(List<Student> students)
 
-        var students = (await _unitOfWork.StudentRepository.GetAllAsync())
+        var studentsOfCurrentStudyYear = (await _unitOfWork.StudentRepository.GetAllAsync())
             .Where(s => s.StudyYear == Helper.GetStudyYearByStudyComponent(studyComponent));
 
         // TODO: get rid of this variable
-        var unassignedStudents = new List<Student>(students);
+        var unassignedStudents = new List<Student>(studentsOfCurrentStudyYear);
 
         while (unassignedStudents.Any())
         {
@@ -143,18 +143,29 @@ public class StudentService
                 continue;
             }
 
-            var highestPriorityNotCheckedCourseId = studentCoursesPriotities
-                .Where(soc => soc.IsChecked == false)
+
+            var notCheckedCourses = studentCoursesPriotities
+                .Where(soc => soc.IsChecked == false);
+
+            if (notCheckedCourses.Count() == 0)
+            {
+                Console.WriteLine($"Trouble with student {currentStudent.Name}: {currentStudent.Id}");
+                Console.WriteLine($"Unassigned students left: {unassignedStudents.Count}");
+            }
+
+            var highestPriorityNotCheckedCourseId = notCheckedCourses
                 .OrderBy(soc => soc.Priority).First().CourseId;
 
             //var course = placement.First(course => course.Title == highestPriorityCourseId);
-            var countOfStudentsEnrolledOnCourse = (await _unitOfWork.StudentOnCourseRepository.GetStudentsByCourseIdAsync(highestPriorityNotCheckedCourseId)).Count();
+
+            var studentsEnrolledOnCourse = await _unitOfWork.StudentOnCourseRepository.GetStudentsByCourseIdAsync(highestPriorityNotCheckedCourseId);
+            var countOfStudentsEnrolledOnCourse = studentsEnrolledOnCourse.Count();
             var courseQuota = (await _unitOfWork.CourseRepository.GetByIdAsync(highestPriorityNotCheckedCourseId)).Quota;
 
             if (countOfStudentsEnrolledOnCourse < courseQuota)
             {
                 var tempStudOnCourse = await _unitOfWork.StudentOnCourseRepository.AddStudentToCourseAsync(currentStudent.Id, highestPriorityNotCheckedCourseId);
-                // TODO: remove savve here and mmake it in the end of the method
+                // TODO: remove savve here and make it in the end of the method
                 
                 
                 //-------------------------------- remove save
@@ -164,18 +175,16 @@ public class StudentService
             }
 
 
-            var studentsOnCourseIds = (await _unitOfWork.StudentOnCourseRepository.GetStudentsByCourseIdAsync(highestPriorityNotCheckedCourseId))
-                .Select(s => s.Id).ToList();
+            //var studentsOnCourseIds = studentsEnrolledOnCourse.Select(s => s.Id).ToList();
 
-            var studentWithLowestAverageGrade = _unitOfWork.StudentRepository.GetAllAsync().Result
-                .Where(s => studentsOnCourseIds.Contains(s.Id!))
+            var studentWithLowestAverageGrade = studentsEnrolledOnCourse
                 .MinBy(s => s.AverageGrade)!;
 
-            if (studentWithLowestAverageGrade.AverageGrade > currentStudent.AverageGrade)
+            if (studentWithLowestAverageGrade.AverageGrade >= currentStudent.AverageGrade)
             {
                 await _unitOfWork.StudentOnCourseRepository.MarkCourseAsChecked(currentStudent.Id, highestPriorityNotCheckedCourseId);
                 ////// TODO: remove savve here and mmake it in the end of the method
-                ////// await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync();
                 continue;
             }
 
@@ -191,10 +200,10 @@ public class StudentService
 
             await _unitOfWork.StudentOnCourseRepository.RemoveStudentFromCourseAsync(studentWithLowestAverageGrade.Id, highestPriorityNotCheckedCourseId);
             ////// TODO: remove savve here and mmake it in the end of the method
-            //////await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
             await _unitOfWork.StudentOnCourseRepository.AddStudentToCourseAsync(currentStudent.Id, highestPriorityNotCheckedCourseId);
             ////// TODO: remove savve here and mmake it in the end of the method
-            //////await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
         }
 
         await _unitOfWork.SaveChangesAsync();
@@ -274,7 +283,7 @@ public class StudentService
             ////await _unitOfWork.SaveChangesAsync();
             //await _unitOfWork.StudentOnCourseRepository.AddStudentToCourseAsync(currentStudent.Id, highestPriorityNotCheckedCourseId);
             //// TODO: remove savve here and mmake it in the end of the method
-            ////await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
         }
         await _unitOfWork.SaveChangesAsync();
     }
@@ -343,6 +352,12 @@ public class StudentService
     public async Task DeleteAsync()
     {
         await _unitOfWork.StudentRepository.DeleteAsync();
+        await _unitOfWork.SaveChangesAsync();
+    }
+
+    public async Task DeleteAsync(Guid id)
+    {
+        await _unitOfWork.StudentRepository.DeleteAsync(id);
         await _unitOfWork.SaveChangesAsync();
     }
 }

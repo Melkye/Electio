@@ -24,6 +24,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -77,7 +78,8 @@ export function tokenGetter() {
     MatIconModule,
     MatListModule,
     MatDialogModule,
-
+    MatDividerModule,
+    
   ],
   providers: [
     AdminService,

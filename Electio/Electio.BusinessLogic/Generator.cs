@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Bogus;
 using Bogus.Distributions.Gaussian;
 using Electio.BusinessLogic.DTOs;
@@ -10,14 +11,15 @@ namespace Electio.BusinessLogic;
 
 public static class Generator
 {
-    // TODO: consider counting how many courses to generate by counting who will enroll
     public static List<CourseCreateDTO> GenerateCoursesForStudyComponent(
         int numberOfCourses = 5,
+        int numberOfStudents = default, // count of students is passed
         Faculty faculty = Faculty.FICE,
         List<Specialty> specialties = default,
-        StudyComponent studyComponent = default,
-        int minQuota = 30,
-        int maxQuota = 120)
+        StudyComponent studyComponent = default
+        //int minQuota = 30,
+        //int maxQuota = 120
+        )
     {
         if (specialties == default)
         {
@@ -28,54 +30,82 @@ public static class Generator
             studyComponent = StudyComponent.SK1;
         }
 
-        var coursesFaker = new Faker<CourseCreateDTO>("uk")
+        var generatedCourses = new List<CourseCreateDTO>();
+
+        var quotaEquallyDistributed = (int)Math.Ceiling((double)numberOfStudents / numberOfCourses);
+
+        var percentageOfHighDemandCourses = 0.3;
+        var percentageOfHighDemandCoursesQuotaComparedToEquallyDistributed = 0.7;
+
+        var numberOfHighDemandCourses = (int)Math.Ceiling(numberOfCourses * percentageOfHighDemandCourses);
+        var quotaForHighDemandCourses = (int)Math.Ceiling(quotaEquallyDistributed * percentageOfHighDemandCoursesQuotaComparedToEquallyDistributed);
+        var highDemandCoursesFaker = new Faker<CourseCreateDTO>("uk")
             .Rules((f, c) =>
             {
-                c.Title = "Дисципліна " + f.Music.Random.Word();
-                c.Quota = 18; // f.Random.Int(minQuota, maxQuota);
+                c.Title = "Дисципліна " + f.Music.Random.Word() + " " + f.Music.Random.Word();
+                c.Quota = quotaForHighDemandCourses;
                 c.Specialties = specialties;
                 c.Faculty = faculty;
                 c.StudyComponent = studyComponent;
             });
+        var highDemandCourses = highDemandCoursesFaker.Generate(numberOfHighDemandCourses);
 
-        return coursesFaker.Generate(numberOfCourses);
 
-        return
-        [
-            new CourseCreateDTO
+        var numberOfNonHighDemandCourses = numberOfCourses - numberOfHighDemandCourses;
+        var leftoversFromHighDemandCourses = numberOfStudents - (quotaForHighDemandCourses * numberOfHighDemandCourses);
+        var quotaForNonHighDemandCourses = (int)Math.Ceiling((double)leftoversFromHighDemandCourses / numberOfNonHighDemandCourses);
+        var nonHighDemandCoursesFaker = new Faker<CourseCreateDTO>("uk")
+            .Rules((f, c) =>
             {
-                Title = "dotnet",
-                Quota = 34,
-                Specialties = new List<Specialty> { Specialty.IT121, Specialty.IT123, Specialty.IT126 },
-                Faculty = Faculty.FICE,
-                StudyComponent = StudyComponent.SK1
-            },
-            new CourseCreateDTO
-            {
-                Title = "node,js",
-                Quota = 33,
-                Specialties = new List<Specialty> { Specialty.IT121, Specialty.IT123, Specialty.IT126 },
-                Faculty = Faculty.FICE,
-                StudyComponent = StudyComponent.SK1
-            },
-            new CourseCreateDTO
-            {
-                Title = "java",
-                Quota = 33,
-                Specialties = new List<Specialty> { Specialty.IT121, Specialty.IT123, Specialty.IT126 },
-                Faculty = Faculty.FICE,
-                StudyComponent = StudyComponent.SK1
-            }
-        ];
+                c.Title = "Дисципліна " + f.Music.Random.Word() + " " + f.Music.Random.Word();
+                c.Quota = quotaForNonHighDemandCourses;
+                c.Specialties = specialties;
+                c.Faculty = faculty;
+                c.StudyComponent = studyComponent;
+            });
+        var nonHighDemandCourses = nonHighDemandCoursesFaker.Generate(numberOfNonHighDemandCourses);
+
+        //generatedCourses.AddRange(highDemandCourses);
+        generatedCourses.AddRange(nonHighDemandCourses);
+        generatedCourses.AddRange(highDemandCourses);
+
+        return generatedCourses;
+        //return
+        //[
+        //    new CourseCreateDTO
+        //    {
+        //        Title = "dotnet",
+        //        Quota = 34,
+        //        Specialties = new List<Specialty> { Specialty.IT121, Specialty.IT123, Specialty.IT126 },
+        //        Faculty = Faculty.FICE,
+        //        StudyComponent = StudyComponent.SK1
+        //    },
+        //    new CourseCreateDTO
+        //    {
+        //        Title = "node,js",
+        //        Quota = 33,
+        //        Specialties = new List<Specialty> { Specialty.IT121, Specialty.IT123, Specialty.IT126 },
+        //        Faculty = Faculty.FICE,
+        //        StudyComponent = StudyComponent.SK1
+        //    },
+        //    new CourseCreateDTO
+        //    {
+        //        Title = "java",
+        //        Quota = 33,
+        //        Specialties = new List<Specialty> { Specialty.IT121, Specialty.IT123, Specialty.IT126 },
+        //        Faculty = Faculty.FICE,
+        //        StudyComponent = StudyComponent.SK1
+        //    }
+        //];
     }
 
     public static List<StudentCreateDTO> GenerateStudentsForStudyYear(
-        int numberOfStudents = 90,
+        int numberOfStudents = 100,
         List<Specialty> specialties = default,
         Faculty faculty = Faculty.FICE,
         StudyYear studyYear = StudyYear.First,
         int averageGradeMean = 80,
-        int averageGradeStdDev = 10)
+        int averageGradeStdDev = 8)
     {
         if (specialties == default)
         {
@@ -135,11 +165,10 @@ public static class Generator
         var studyComponentsAvailableToStudent = Helper.GetStudyComponentsAvailableToStudyYear(student.StudyYear);
 
         var coursesAvailableToStudent = courses
-            .Where(c => 
-                c.Faculty == student.Faculty
-                && c.Specialties.Contains(student.Specialty)
-                && studyComponentsAvailableToStudent.Contains(c.StudyComponent))
-            .ToList();
+            .Where(c =>
+                studyComponentsAvailableToStudent.Contains(c.StudyComponent)
+                && c.Faculty == student.Faculty
+                && c.Specialties.Contains(student.Specialty));
 
         var coursesByStudyComponent = coursesAvailableToStudent
             .GroupBy(c => c.StudyComponent)
@@ -177,10 +206,9 @@ public static class Generator
 
         var coursesAvailableToStudent = courses
             .Where(c =>
-                c.Faculty == student.Faculty
-                && c.Specialties.Contains(student.Specialty)
-                && studyComponentsAvailableToStudent.Contains(c.StudyComponent))
-            .ToList();
+                studyComponentsAvailableToStudent.Contains(c.StudyComponent)
+                && c.Faculty == student.Faculty
+                && c.Specialties.Contains(student.Specialty));
 
         var coursesByStudyComponent = coursesAvailableToStudent
             .GroupBy(c => c.StudyComponent)

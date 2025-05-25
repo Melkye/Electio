@@ -71,11 +71,25 @@ public class StudentRepository
 
     public async Task DeleteAsync()
     {
-        var students = await _context.Students.ToListAsync();
-        _context.Students.RemoveRange(students);
+        //await _context.Database.ExecuteSqlRawAsync("TRUNCATE TABLE [StudentsOnCourses]");
+        //await _context.Database.ExecuteSqlRawAsync("TRUNCATE TABLE [Students]");
 
         var studentsOnCourses = await _context.StudentsOnCourses.ToListAsync();
         _context.StudentsOnCourses.RemoveRange(studentsOnCourses);
-        //await _context.SaveChangesAsync();
+
+        var students = await _context.Students.ToListAsync();
+        _context.Students.RemoveRange(students);
+    }
+
+    public async Task DeleteAsync(Guid id)
+    {
+        var student = await _context.Students.FindAsync(id);
+        _context.Students.Remove(student!);
+
+        var studentOnCourses = await _context.StudentsOnCourses
+            .Where(soc => soc.StudentId == id)
+            .ToListAsync();
+
+        _context.StudentsOnCourses.RemoveRange(studentOnCourses);
     }
 }

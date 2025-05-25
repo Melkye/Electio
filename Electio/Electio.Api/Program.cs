@@ -18,7 +18,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddDbContext<ElectioDbContext>(
     optionsBuilder => optionsBuilder.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")),
-    contextLifetime: ServiceLifetime.Transient);
+    contextLifetime: ServiceLifetime.Scoped);
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ElectioDbContext>()

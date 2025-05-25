@@ -3,7 +3,8 @@ import { AdminService } from '../../services/admin.service';
 
 @Component({
   selector: 'student-create',
-  templateUrl: './student-create.component.html'
+  templateUrl: './student-create.component.html',
+  styleUrls: ['./student-create.component.css']
 })
 export class StudentCreateComponent {
   student = {

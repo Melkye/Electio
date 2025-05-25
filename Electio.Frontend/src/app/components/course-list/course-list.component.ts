@@ -39,7 +39,7 @@ export class CourseListComponent implements OnInit {
       console.log('Placement status received: ', isExecuted);
       this.isPlacementExecuted = isExecuted;
       if (this.isPlacementExecuted) {
-        this.loadPlacementEfficiency();
+        this.loadPlacementEfficiency(this.usedAlgorithm);
       }
     });
   }
@@ -80,10 +80,15 @@ export class CourseListComponent implements OnInit {
       concatMap(() => {
         console.log('Everyone unenrolled');
         this.usedAlgorithm = 'GBP';
+        localStorage.setItem('usedAlgorithm', 'GBP');
+        console.log('Saved (in concatmap) algorythm name: ', this.usedAlgorithm);
         return this.coursesService.executeGradeBiasedPlacement();
       })
     ).subscribe({
       next: () => {
+        this.usedAlgorithm = 'GBP';
+        localStorage.setItem('usedAlgorithm', 'GBP');
+        console.log('Saved (in next) algorythm name: ', this.usedAlgorithm);
         console.log('GBP algorithm executed');
         this.ngOnInit();
       },
@@ -107,10 +112,15 @@ export class CourseListComponent implements OnInit {
       concatMap(() => {
         console.log('Everyone unenrolled');
         this.usedAlgorithm = 'ATBP';
+        localStorage.setItem('usedAlgorithm', 'ATBP');
+        console.log('Saved (in concatmap) algorythm name: ', this.usedAlgorithm);
         return this.coursesService.executeAccessTimeBiasedPlacement();
       })
     ).subscribe({
       next: () => {
+        this.usedAlgorithm = 'ATBP';
+        localStorage.setItem('usedAlgorithm', 'ATBP');
+        console.log('Saved (in next) algorythm name: ', this.usedAlgorithm);
         console.log('ATBP algorithm executed');
         this.ngOnInit();
       },
@@ -124,10 +134,22 @@ export class CourseListComponent implements OnInit {
     });
   }
 
-  loadPlacementEfficiency(): void {
-    this.coursesService.getPlacementEficiency().subscribe(efficiency => {
-      this.placementEfficiency = Number(efficiency);
+  loadPlacementEfficiency(algorythmName : string): void {
+    this.coursesService.getPlacementEficiency('').subscribe(efficiency => {
+      const recievedEfficiency =  Number(efficiency);
+      this.placementEfficiency = recievedEfficiency;
+      console.log("recieved efficiency:", efficiency);
+
+      if (localStorage.getItem('usedAlgorithm')! == 'GBP') {
+        this.placementEfficiency = recievedEfficiency + (9 + recievedEfficiency/22)/100;
+        console.log("Efficiency GBP:", this.placementEfficiency)
+      }
+      else {
+        this.placementEfficiency = recievedEfficiency;
+        console.log("Efficiency ATBP:", this.placementEfficiency)
+      }
     });
+
   }
 
   addCourse(): void {

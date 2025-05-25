@@ -5,7 +5,7 @@ import { Component } from '@angular/core';
   template: `
     <h2 mat-dialog-title>Завантаження</h2>
     <mat-dialog-content>
-      <p>Буудь ласка, почекайтe</p>
+      <p>Будь ласка, почекайтe</p>
     </mat-dialog-content>
   `,
   styles: [`

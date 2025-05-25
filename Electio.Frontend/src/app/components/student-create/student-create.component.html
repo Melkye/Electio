@@ -1,36 +1,71 @@
-<h2>Create Student</h2>
+<h2>Створити студента</h2>
 <form (ngSubmit)="createStudent()">
+
   <div>
-    <label for="name">Ім'я</label>
-    <input type="text" id="name" [(ngModel)]="student.name" name="name" required>
+    <mat-form-field appearance="fill">
+      <mat-label>Ім'я</mat-label>
+      <input matInput type="text" [(ngModel)]="student.name" name="name" required>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Username</mat-label>
+      <input matInput type="text" [(ngModel)]="student.username" name="username" required>
+    </mat-form-field>
   </div>
+
   <div>
-    <label for="username">Username</label>
-    <input type="text" id="username" [(ngModel)]="student.username" name="username" required>
+    <mat-form-field appearance="fill">
+      <mat-label>Email</mat-label>
+      <input matInput type="email" [(ngModel)]="student.email" name="email" required>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Пароль</mat-label>
+      <input matInput type="password" [(ngModel)]="student.password" name="password" required>
+    </mat-form-field>
   </div>
+
   <div>
-    <label for="email">Email</label>
-    <input type="email" id="email" [(ngModel)]="student.email" name="email" required>
+    <mat-form-field appearance="fill">
+      <mat-label>Середній бал</mat-label>
+      <input matInput type="number" [(ngModel)]="student.averageGrade" name="averageGrade" required>
+    </mat-form-field>
   </div>
+
+
+
   <div>
-    <label for="password">Password</label>
-    <input type="password" id="password" [(ngModel)]="student.password" name="password" required>
+    <mat-form-field appearance="fill">
+      <mat-label>Факультет</mat-label>
+      <mat-select [(ngModel)]="student.faculty" name="faculty" required>
+        <mat-option value=1>ФІОТ</mat-option>
+        <mat-option value=2>ІПСА</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Спеціальність</mat-label>
+      <mat-select [(ngModel)]="student.specialty" name="specialty" required>
+        <mat-option value="121">121</mat-option>
+        <mat-option value="122">122</mat-option>
+        <mat-option value="123">123</mat-option>
+        <mat-option value="124">124</mat-option>
+        <mat-option value="126">126</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Курс</mat-label>
+      <mat-select [(ngModel)]="student.studyYear" name="studyYear" required>
+        <mat-option value="First">1</mat-option>
+        <mat-option value="Second">2</mat-option>
+        <mat-option value="Third">3</mat-option>
+      </mat-select>
+    </mat-form-field>
   </div>
+
   <div>
-    <label for="averageGrade">Average Grade</label>
-    <input type="number" id="averageGrade" [(ngModel)]="student.averageGrade" name="averageGrade" required>
+    <button mat-raised-button color="primary" type="submit">Створити студента</button>
   </div>
-  <div>
-    <label for="specialty">Specialty</label>
-    <input type="text" id="specialty" [(ngModel)]="student.specialty" name="specialty" required>
-  </div>
-  <div>
-    <label for="faculty">Faculty</label>
-    <input type="text" id="faculty" [(ngModel)]="student.faculty" name="faculty" required>
-  </div>
-  <div>
-    <label for="studyYear">Study Year</label>
-    <input type="number" id="studyYear" [(ngModel)]="student.studyYear" name="studyYear" required>
-  </div>
-  <button type="submit">Create Student</button>
+
 </form>
