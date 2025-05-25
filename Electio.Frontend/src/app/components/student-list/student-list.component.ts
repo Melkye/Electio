@@ -43,4 +43,14 @@ export class StudentListComponent implements OnInit {
   applyFilter(): void {
     this.dataSource.filter = this.filter.trim().toLowerCase();
   }
+  
+  getFacultyName(number: number): string {
+    if (number === 1) {
+      return 'ФІОТ';
+    } else if (number === 2) {
+      return 'ІПСА';
+    } else {
+      return 'Unknown Faculty';
+    }
+  }
 }

@@ -7,7 +7,7 @@
     </mat-card-header>
     <mat-card-content>
         <!-- <p>Група: {{ student.group }}</p> -->
-        <div>Факультет: {{ student.faculty }}</div>
+        <div>Факультет: {{ getFacultyName(student.faculty) }}</div>
         <div>Спеціальність: {{ student.specialty }}</div>
         <div>Курс: {{ student.studyYear }}</div>
 
@@ -17,20 +17,23 @@
                 <span> Priority: {{ getCoursePriority(course.id) }}</span>
             </div> -->
           <div *ngIf="isPlacementExecuted">
-            <h3>Enrolled Courses:</h3>
-            <div *ngFor="let studyComponentGroup of studentPriorities.coursesPriorities | keyvalue">
-              <!-- Study component title -->
-                <h4>{{ studyComponentGroup.key }}</h4> 
-
-                <div *ngFor="let coursePriority of studyComponentGroup.value | keyvalue">
-                    <div *ngIf="isStudentEnrolled(coursePriority.key)">
-                        <span>
-                            <a [routerLink]="['/courses', getCourseId(coursePriority.key)]">{{ coursePriority.key }}</a>
-                          </span>
-                          <span> Priority: {{ getCoursePriority(coursePriority.key) }}</span>
-                    </div>
-              </div>
-            </div>
+            <h3 mat-subheader>Обрані дисципліни:</h3>
+<mat-list>
+  <div *ngFor="let studyComponentGroup of studentPriorities.coursesPriorities | keyvalue">
+    <mat-list-item>
+      <div class="flex-container">
+        <div *ngFor="let coursePriority of studyComponentGroup.value | keyvalue" class="flex-item">
+          <div *ngIf="isStudentEnrolled(coursePriority.key)">
+            <span class="bold-text">{{ studyComponentGroup.key }}</span>
+            <a mat-button color="primary" [routerLink]="['/courses', getCourseId(coursePriority.key)]">{{ coursePriority.key }}</a>
+            <span>Пріоритет: {{ getCoursePriority(coursePriority.key) }}</span>
+          </div>
+        </div>
+      </div>
+    </mat-list-item>
+    <mat-divider></mat-divider>
+  </div>
+</mat-list>
           </div>
 
           <div *ngIf="!isPlacementExecuted">

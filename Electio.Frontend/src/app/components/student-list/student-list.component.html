@@ -1,9 +1,6 @@
 <!-- student-list.component.html -->
 <div class="container">
-    <mat-form-field class="filter-input">
-      <input matInput placeholder="Введіть прізвище" [(ngModel)]="filter">
-    </mat-form-field>
-  
+
     <mat-table [dataSource]="dataSource" matSort>
   
       <!-- Define table columns -->
@@ -20,7 +17,7 @@
 
         <ng-container matColumnDef="faculty">
             <mat-header-cell *matHeaderCellDef mat-sort-header>Факультет</mat-header-cell>
-            <mat-cell *matCellDef="let student">{{ student.faculty }}</mat-cell>
+            <mat-cell *matCellDef="let student">{{ getFacultyName(student.faculty) }}</mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="specialty">

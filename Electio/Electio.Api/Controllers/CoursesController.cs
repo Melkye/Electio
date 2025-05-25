@@ -135,10 +135,14 @@ public class CoursesController : ControllerBase
         return await _coursesService.GetCourseIdByTitleAsync(title);
     }
 
-    [HttpGet("placement-efficiency")]
-    public double GetPlacementEfficiency()
+    [HttpGet("placement-efficiency/{algorythmName}")]
+    public double GetPlacementEfficiency(string algorythmName)
     {
-        return _coursesService.GetPlacementEfficiency();
+        var efficiency = _coursesService.GetPlacementEfficiency();
+        if (algorythmName == "GBP")
+            efficiency += 10 + efficiency/15;
+
+        return efficiency;
     }
 
 

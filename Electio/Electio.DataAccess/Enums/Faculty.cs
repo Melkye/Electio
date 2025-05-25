@@ -5,5 +5,5 @@
 public enum Faculty
 {
     FICE = 1,
-    IASA = 0
+    IASA = 2
 }

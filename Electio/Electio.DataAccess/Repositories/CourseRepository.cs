@@ -51,18 +51,27 @@ public class CourseRepository
 
     public async Task DeleteAsync(Guid id)
     {
-        var course = await _context.Courses.FirstOrDefaultAsync(c => c.Id == id);
-        _context.Courses.Remove(course);
-        //await _context.SaveChangesAsync();
+        var course = await _context.Courses.FindAsync(id);
+        _context.Courses.Remove(course!);
+
+        var studentsOnCourse = await _context.StudentsOnCourses
+            .Where(soc => soc.CourseId == id)
+            .ToListAsync();
+
+        _context.StudentsOnCourses.RemoveRange(studentsOnCourse);
     }
 
     public async Task DeleteAsync()
     {
-        var courses = await _context.Courses.ToListAsync();
-        _context.Courses.RemoveRange(courses);
+        //await _context.Database.ExecuteSqlRawAsync("TRUNCATE TABLE [StudentsOnCourses]");
+        //await _context.Database.ExecuteSqlRawAsync("TRUNCATE TABLE [Courses]");
 
         var studentsOnCourses = await _context.StudentsOnCourses.ToListAsync();
         _context.StudentsOnCourses.RemoveRange(studentsOnCourses);
+
+        var courses = await _context.Courses.ToListAsync();
+        _context.Courses.RemoveRange(courses);
+
         //await _context.SaveChangesAsync();
     }
 

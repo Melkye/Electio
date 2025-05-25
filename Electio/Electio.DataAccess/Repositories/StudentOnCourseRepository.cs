@@ -80,12 +80,12 @@ public class StudentOnCourseRepository
 
     public async Task<StudentOnCourse> AddStudentToCourseAsync(Guid studentId, Guid courseId)
     {
-        var student = await _context.Students.FindAsync(studentId);
-        var course = await _context.Courses.FindAsync(courseId);
+        //var student = await _context.Students.FindAsync(studentId);
+        //var course = await _context.Courses.FindAsync(courseId);
 
-        if (student != null && course != null)
-        {
-            var studentOnCourse = _context.StudentsOnCourses.First(soc => soc.StudentId == studentId && soc.CourseId == courseId);
+        //if (student != null && course != null)
+        //{
+            var studentOnCourse = await _context.StudentsOnCourses.FirstAsync(soc => soc.StudentId == studentId && soc.CourseId == courseId);
             studentOnCourse.IsEnrolled = true;
             studentOnCourse.IsChecked = true;
 
@@ -94,19 +94,19 @@ public class StudentOnCourseRepository
 
             //await _context.SaveChangesAsync();
             return studentOnCourseUpdatedEntity.Entity;
-        }
+        //}
 
-        throw new ArgumentException("Student or course not found");
+        //throw new ArgumentException("Student or course not found");
     }
 
     public async Task<StudentOnCourse> RemoveStudentFromCourseAsync(Guid studentId, Guid courseId)
     {
-        var student = await _context.Students.FindAsync(studentId);
-        var course = await _context.Courses.FindAsync(courseId);
+        //var student = await _context.Students.FindAsync(studentId);
+        //var course = await _context.Courses.FindAsync(courseId);
 
-        if (student != null && course != null)
-        {
-            var studentOnCourse = _context.StudentsOnCourses.First(soc => soc.StudentId == studentId && soc.CourseId == courseId);
+        //if (student != null && course != null)
+        //{
+            var studentOnCourse = await _context.StudentsOnCourses.FirstAsync (soc => soc.StudentId == studentId && soc.CourseId == courseId);
             studentOnCourse.IsEnrolled = false;
 
             var studentOnCourseUpdatedEntity = _context.StudentsOnCourses
@@ -114,20 +114,20 @@ public class StudentOnCourseRepository
 
             //await _context.SaveChangesAsync();
             return studentOnCourseUpdatedEntity.Entity;
-        }
+        //}
 
-        throw new ArgumentException("Student or course not found");
+        //throw new ArgumentException("Student or course not found");
     }
 
     // TODO: remove this methos as it's used for algorithm only | or at least try move it to service
     public async Task<StudentOnCourse> MarkCourseAsChecked(Guid studentId, Guid courseId)
     {
-        var student = await _context.Students.FindAsync(studentId);
-        var course = await _context.Courses.FindAsync(courseId);
+        //var student = await _context.Students.FindAsync(studentId);
+        //var course = await _context.Courses.FindAsync(courseId);
 
-        if (student != null && course != null)
-        {
-            var studentOnCourse = _context.StudentsOnCourses.First(soc => soc.StudentId == studentId && soc.CourseId == courseId);
+        //if (student != null && course != null)
+        //{
+            var studentOnCourse = await _context.StudentsOnCourses.FirstAsync(soc => soc.StudentId == studentId && soc.CourseId == courseId);
             studentOnCourse.IsChecked = true;
 
             var studentOnCourseUpdatedEntity = _context.StudentsOnCourses
@@ -135,9 +135,9 @@ public class StudentOnCourseRepository
 
             //await _context.SaveChangesAsync();
             return studentOnCourseUpdatedEntity.Entity;
-        }
+        //}
 
-        throw new ArgumentException("Student or course not found");
+        //throw new ArgumentException("Student or course not found");
     }
 
     public async Task UnenrollEveryone()

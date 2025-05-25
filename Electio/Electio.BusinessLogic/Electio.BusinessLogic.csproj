@@ -14,5 +14,7 @@
     <ProjectReference Include="..\Electio.DataAccess\Electio.DataAccess.csproj" />
     <ProjectReference Include="..\Electio.Generation\Electio.Generation.csproj" />
   </ItemGroup>
-
+  <ItemGroup>
+    <ProjectCapability Include="CSharp;Managed;ClassDesigner" />
+  </ItemGroup>
 </Project>

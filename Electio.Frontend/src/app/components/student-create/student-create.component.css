@@ -1,0 +1,28 @@
+.student-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.form-title {
+  text-align: center;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 16px; /* Adjust spacing between form groups */
+}
+
+.mat-form-field {
+  width: 300px; /* Adjust width as needed */
+}
+
+.divider {
+  margin: 8px 0; /* Adjust spacing between form elements */
+}
+
+button {
+  margin-top: 16px; /* Adjust spacing above the button */
+}

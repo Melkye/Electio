@@ -162,13 +162,13 @@ namespace Electio.Api.Controllers
         //    return NoContent();
         //}
 
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> Delete(int id)
-        //{
-        //    await _studentService.DeleteStudent(id);
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            await _studentService.DeleteAsync(id);
 
-        //    return NoContent();
-        //}
+            return NoContent();
+        }
 
         [HttpDelete]
         public async Task<IActionResult> DeleteAsync()
@@ -177,5 +177,6 @@ namespace Electio.Api.Controllers
 
             return NoContent();
         }
+
     }
 }

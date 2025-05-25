@@ -13,7 +13,10 @@
 
     <mat-form-field appearance="fill">
       <mat-label>Faculty</mat-label>
-      <input matInput type="number" formControlName="faculty" required>
+      <mat-select formControlName="faculty" >
+        <mat-option [value]="1">ФІОТ</mat-option>
+        <mat-option [value]="2">ІПСА</mat-option>
+      </mat-select>
     </mat-form-field>
 
     <mat-form-field appearance="fill">
@@ -24,7 +27,9 @@
       </mat-select> -->
       <mat-select formControlName="specialties" multiple>
         <mat-option [value]="121">121</mat-option>
+        <mat-option [value]="122">122</mat-option>
         <mat-option [value]="123">123</mat-option>
+        <mat-option [value]="124">124</mat-option>
         <mat-option [value]="126">126</mat-option>
       </mat-select>
     </mat-form-field>
